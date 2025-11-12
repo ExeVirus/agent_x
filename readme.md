@@ -7,7 +7,7 @@
 
 Next Steps:
 
-1. Add nodes to levels.lua
+1. Add nodes to nodes.lua
 2. Grab world edit for creating levels, Create First Level
 3. Get the physics back up and running
 4. Move replay over to replay.lua

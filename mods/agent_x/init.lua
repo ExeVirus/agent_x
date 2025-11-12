@@ -15,6 +15,14 @@ ax_core.buildMode = true -- Control ax_core globally: `true` for making/building
 ax_core.levels = {}
 ax_core.modpath = core.get_modpath("ax_core")
 
+------------------------------------------------------
+-- This really should exist in core, 
+------------------------------------------------------
+table.merge = function(dest, src)
+    local ret_val = table.copy(dest)
+    for k, v in pairs(src) do ret_val[k] = v end
+    return ret_val
+end
 
 ------------------------------------------------------
 -- !!! First time startup, overwrite map.sqlite !!!!!!
