@@ -18,9 +18,9 @@ core.register_entity("ax_core:agent", {
         physical = true,
         collide_with_objects = false,
         pointable = false,
-        collisionbox = {-0.5, -0.5, -0.5, 0.5, 2, 0.5},
+        collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
         visual = "sprite",
-        textures = {"default_cobble.png"}
+        textures = {"invisible.png"}
     },
 
     on_activate = function(self, staticdata)
@@ -130,6 +130,7 @@ ax_core.enable = function(name)
         if entity then
             entity:get_luaentity().player_name = name
             player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=0, z=0})
+            player:set_eye_offset(vector.new(0,-10,0))
         end
     else
         player:hud_set_flags({
@@ -157,6 +158,7 @@ function ax_core.click(itemstack, user, pointed_thing)
             if pointed_thing and pointed_thing.type == "node" then
                 local target_position = pointed_thing.under
                 if core.get_node(target_position).name == "ax_core:attractor" then
+                    
                     ax_core.set_target(player_name, target_position)
                     return nil
                 end
@@ -239,19 +241,12 @@ end
 
 core.register_tool("ax_core:gun", {
 	description = "Agent X Gun",
-	inventory_image = "default_cobble.png", -- Placeholder image
+	inventory_image = "glow_red.png", -- Placeholder image
 	range = 256,
 	full_punch_interval = 0.2,
 	on_use = ax_core.click,
 	on_place = ax_core.click,
 	on_secondary_use = ax_core.click,
-})
-
-core.register_node("ax_core:attractor", {
-    description = "Attractor",
-    tiles = {"default_cobble.png^[colorize:blue:255"},
-    is_ground_content = true,
-    groups = {oddly_breakable_by_hand=3}
 })
 
 core.register_chatcommand("ax",

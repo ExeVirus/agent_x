@@ -251,7 +251,7 @@ core.register_node("ax_core:attractor", {
     description = "Attractor",
     tiles = {"default_cobble.png^[colorize:blue:255"},
     is_ground_content = true,
-    groups = {oddly_breakable_by_hand=3}
+    groups = {oddly_breakable_by_hand=1}
 })
 
 core.register_chatcommand("ax",

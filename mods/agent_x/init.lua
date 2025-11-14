@@ -11,7 +11,7 @@
 -- Everything can be modified, public API
 -----------------------------------------
 ax_core = {} -- global table for other dependent mod access
-ax_core.buildMode = true -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
+ax_core.buildMode = false -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
 ax_core.levels = {}
 ax_core.modpath = core.get_modpath("ax_core")
 
@@ -35,6 +35,8 @@ end
 
 dofile(ax_core.modpath .. "/nodes.lua")
 dofile(ax_core.modpath .. "/camera.lua")
+dofile(ax_core.modpath .. "/physics.lua")
+dofile(ax_core.modpath .. "/chat_commands.lua")
 
 -- --Tracker Variables
 -- local loaded_level = nil
