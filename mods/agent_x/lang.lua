@@ -24,7 +24,9 @@
 -- circle_look(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz)
 -- circle_look_line(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed)
 -- sound{time,sound,gain,loop,play_time}
---
+-- replay{time,replay_name,loop}
+-- attach{time}
+-- detach{time}
 
 ax_core.lang = {}
 function ax_core.get_eye_offset(player)
@@ -56,6 +58,8 @@ ax_core.lang.command_num_args = {
     circle_look_line = 9,
     sound = 5,
     replay = 3,
+    attach = 1,
+    detach = 1,
 }
 
 ax_core.lang.commands = {
@@ -150,6 +154,12 @@ ax_core.lang.commands = {
     end,
     replay = function(player,orig_pos,dtime,replay_name,loop)
         ax_core.play_replay(replay_name, loop ~= 0)
+    end,
+    attach = function(player,orig_pos,dtime)
+        ax_core.enable(player:get_player_name())
+    end,
+    detach = function(player,orig_pos,dtime)
+        ax_core.disable(player:get_player_name())
     end,
 }
 ax_core.lang.players = {}

@@ -15,7 +15,12 @@ core.register_chatcommand("ax",
         local stack = ItemStack("ax_core:gun")
         player:get_inventory():set_list("main", {stack})
         player:set_wielded_item(stack)
-        ax_core.enable(name)
+        if not ax_core.players[name].enabled then
+            ax_core.enable(name)
+        else
+            ax_core.disable(name)
+        end
+        
         return true, "AX mode toggled."
     end
 })

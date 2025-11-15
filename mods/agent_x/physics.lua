@@ -122,6 +122,9 @@ ax_core.enable = function(name)
         }
     end
     if not ax_core.players[name].enabled then
+        local stack = ItemStack("ax_core:gun")
+        player:get_inventory():set_list("main", {stack})
+        player:set_wielded_item(stack)
         player:hud_set_flags({
             hotbar = false,
             healthbar = false,
@@ -135,16 +138,26 @@ ax_core.enable = function(name)
         if entity then
             entity:get_luaentity().player_name = name
             player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=0, z=0})
-            --player:set_eye_offset(vector.new(0,-10,0))
         end
-    else
+    end
+end
+
+ax_core.disable = function(name)
+    local player = core.get_player_by_name(name)
+    if not player then return end
+    if not ax_core.players[name] then
+        ax_core.players[name] = {
+            enabled = false
+        }
+    end
+    if ax_core.players[name].enabled then
         player:hud_set_flags({
-            hotbar = true,
-            healthbar = true,
-            breathbar = false,
-            wielditem = false,
-            minimap = false,
-            crosshair = true
+                hotbar = true,
+                healthbar = true,
+                breathbar = false,
+                wielditem = false,
+                minimap = false,
+                crosshair = true
         })
         ax_core.players[name].enabled = false
         local entity = player:get_attach()
