@@ -6,21 +6,16 @@ ax_core.physics = {
     gravity = -5,
     friction = 0.2,
 }
-ax_core.recordings = {}
+ax_core.replays = {}
 
-core.register_on_joinplayer(function(player)
-  local player_name = player:get_player_name()
-  ax_core.players[player_name] = {}
-end)
-
-core.register_entity("ax_core:agent", {
+ax_core.agent_properties = {
     initial_properties = {
         physical = true,
         collide_with_objects = false,
         pointable = false,
         collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
         visual = "sprite",
-        textures = {"invisible.png"}
+        textures = {"agent_x.png"}
     },
 
     on_activate = function(self, staticdata)
@@ -33,18 +28,18 @@ core.register_entity("ax_core:agent", {
         local player_data = {}
         if self.player_name then
             player_data = ax_core.players[self.player_name]
-        elseif self.recording then
-            local record = self.recording
-            record.time = record.time + dtime
-            while record.time > record.entries[record.index].time do
-                record.index = record.index + 1
-                if record.index > #record.entries then
+        elseif self.replay then
+            local replay = self.replay
+            replay.time = replay.time + dtime
+            while replay.time > replay.entries[replay.index].time do
+                replay.index = replay.index + 1
+                if replay.index > #replay.entries then
                     self.object:remove()
                     return
                 end
             end
             player_data = {
-                target = record.entries[record.index].target
+                target = replay.entries[replay.index].target
             }
         else
             self.object:remove()
@@ -106,7 +101,9 @@ core.register_entity("ax_core:agent", {
 
         self.object:set_velocity(velocity)
     end,
-})
+}
+
+core.register_entity("ax_core:agent", ax_core.agent_properties)
 
 ax_core.enable = function(name)
     local player = core.get_player_by_name(name)
@@ -126,11 +123,11 @@ ax_core.enable = function(name)
             crosshair = true
         })
         ax_core.players[name].enabled = true
-        local entity = core.add_entity(player:get_pos(), "ax_core:agent")
+        local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.5,0)), "ax_core:agent")
         if entity then
             entity:get_luaentity().player_name = name
             player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=0, z=0})
-            player:set_eye_offset(vector.new(0,-10,0))
+            --player:set_eye_offset(vector.new(0,-10,0))
         end
     else
         player:hud_set_flags({
@@ -158,7 +155,6 @@ function ax_core.click(itemstack, user, pointed_thing)
             if pointed_thing and pointed_thing.type == "node" then
                 local target_position = pointed_thing.under
                 if core.get_node(target_position).name == "ax_core:attractor" then
-                    
                     ax_core.set_target(player_name, target_position)
                     return nil
                 end
@@ -170,73 +166,18 @@ function ax_core.click(itemstack, user, pointed_thing)
 end
 
 ax_core.set_target = function(name, pos)
-    if ax_core.players[name].record then
-        local record = ax_core.players[name].record
-        if (#record.entries == 0) or
-            (pos ~= record.entries[#record.entries].target) or
-            (record.entries[#record.entries].target ~= nil and not vector.equals(record.entries[#record.entries].target, pos)) then
-            table.insert(record.entries, {
+    if ax_core.players[name].replay then
+        local replay = ax_core.players[name].replay
+        if (#replay.entries == 0) or
+            (pos ~= replay.entries[#replay.entries].target) or
+            (replay.entries[#replay.entries].target ~= nil and not vector.equals(replay.entries[#replay.entries].target, pos)) then
+            table.insert(replay.entries, {
                 time = core.get_us_time(),
                 target = pos
             })
         end
     end
     ax_core.players[name].target = pos
-end
-
-ax_core.start_recording = function(name, params)
-    if string.match(params, "^%w+$") == nil then
-        return false, "Improper Arguments: 1 arg, alphanumerics only"
-    end
-    ax_core.players[name].record = {
-        name = params,
-        time = core.get_us_time(),
-        entries = {},
-        starting_pos = core.get_player_by_name(name):get_pos()
-    }
-    return true, "Recording Started."
-end
-
-ax_core.stop_recording = function(name)
-    if ax_core.players[name].record then
-        local record = ax_core.players[name].record
-        table.insert(record.entries, {
-            time = core.get_us_time(),
-            target = nil
-        })
-        local recording_name = record.name
-        for i=1, #record.entries, 1 do
-            record.entries[i].time = (record.entries[i].time - record.time) / 1000000 -- microseconds -> seconds
-        end
-        ax_core.recordings[recording_name] ={
-            entries = table.copy(record.entries),
-            starting_pos = vector.copy(record.starting_pos)
-        } 
-        ax_core.players[name].record = nil
-        return true, "Recording '" .. recording_name .. "' saved with " .. #record.entries .. " entries."
-    else
-        return false, "No current recording to stop"
-    end
-end
-
-ax_core.play_recording = function(params)
-    if string.match(params, "^%w+$") == nil then
-        return false, "Improper Arguments: 1 arg, alphanumerics only"
-    end
-    if ax_core.recordings[params] == nil then
-        return false, "No Recording '" .. params .. "' Found."
-    end
-    local entity = core.add_entity(ax_core.recordings[params].starting_pos, "ax_core:agent")
-    if entity then
-        entity:get_luaentity().recording = {
-            index = 1,
-            time = 0,
-            entries = table.copy(ax_core.recordings[params].entries),
-        }
-        return true
-    else
-        return false, "Couldn't Create Playback Entity!!"
-    end
 end
 
 core.register_tool("ax_core:gun", {
@@ -247,83 +188,4 @@ core.register_tool("ax_core:gun", {
 	on_use = ax_core.click,
 	on_place = ax_core.click,
 	on_secondary_use = ax_core.click,
-})
-
-core.register_chatcommand("ax",
-{
-    params = "",
-    description = "Toggle ax mode",
-    privs = {},
-    func = function(name, params)
-        local player = core.get_player_by_name(name)
-        if not player then
-            return false, "Player not found."
-        end
-        local stack = ItemStack("ax_core:gun")
-        player:get_inventory():set_list("main", {stack})
-        player:set_wielded_item(stack)
-        ax_core.enable(name)
-        return true, "AX mode toggled."
-    end
-})
-
-core.register_chatcommand("start",
-{
-    params = "<recording name>",
-    description = "Start AX Recording",
-    privs = {},
-    func = function(name, params)
-        return ax_core.start_recording(name, params)
-    end
-})
-
-core.register_chatcommand("stop",
-{
-    params = "",
-    description = "Stop Current AX Recording",
-    privs = {},
-    func = function(name, params)
-        return ax_core.stop_recording(name)
-    end
-})
-
-core.register_chatcommand("play",
-{
-    params = "<recording name>",
-    description = "Playback AX Recording",
-    privs = {},
-    func = function(name, params)
-        return ax_core.play_recording(params)
-    end
-})
-
-core.register_chatcommand("phys",
-{
-    params = "str,mass,air,gravity,friction_time",
-    description = "AX phys",
-    privs = {},
-    func = function(name, params)
-        -- Split the parameter string by the comma
-        local parts = string.split(params, ",")
-        if #parts ~= 5 then
-            return false, "Invalid format. Usage: /phys str,mass,air,gravity,friction_time"
-        end
-        local str  = tonumber(string.trim(parts[1]))
-        local mass = tonumber(string.trim(parts[2]))
-        local air  = tonumber(string.trim(parts[3]))
-        local grav = tonumber(string.trim(parts[4]))
-        local fric = tonumber(string.trim(parts[5]))
-        if not str or not mass or not air or not grav or not fric then
-            return false, "Invalid numbers. Usage: /phys str,mass,air,gravity,friction_time"
-        end
-        if not ax_core.players[name] then
-            ax_core.players[name] = {}
-        end
-        ax_core.physics.strength = str
-        ax_core.physics.mass = mass
-        ax_core.physics.air_resistance = air
-        ax_core.physics.gravity = grav
-        ax_core.physics.friction = fric
-        return true
-    end
 })

@@ -187,26 +187,6 @@ ax_camera.camera = function(player, params, mode)
     end
 end
 
-core.register_chatcommand("camera", 
-{
-    params = "{pos|look|fov,seconds,val,val,val}{}{}{}",
-    description = "Camera Control API, groups of {} are executed in order until completion",
-    privs = {},
-    func = function(name, params)
-        ax_camera.camera(core.get_player_by_name(name), params, "one_shot")
-    end
-})
-
-core.register_chatcommand("camera_loop", 
-{
-    params = "{pos|look|fov,seconds,val,val,val}{}{}{}",
-    description = "Camera Control API, groups of {} are executed in order until completion",
-    privs = {},
-    func = function(name, params)
-        ax_camera.camera(core.get_player_by_name(name), params, "loop")
-    end
-})
-
 core.register_globalstep(function(dtime)
     for player_name, camera in pairs(ax_camera.players) do
         if camera.commands ~= nil then
