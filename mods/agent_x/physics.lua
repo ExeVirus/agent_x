@@ -6,12 +6,11 @@ ax_core.physics = {
     gravity = -5,
     friction = 0.2,
 }
-ax_core.replays = {}
 
 ax_core.agent_properties = {
     initial_properties = {
         physical = true,
-        collide_with_objects = false,
+        collide_with_objects = true,
         pointable = false,
         collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
         visual = "sprite",
@@ -31,15 +30,17 @@ ax_core.agent_properties = {
         elseif self.replay then
             local replay = self.replay
             replay.time = replay.time + dtime
-            while replay.time > replay.entries[replay.index].time do
+            while #replay.entries >= replay.index+1 and replay.time > replay.entries[replay.index+1].time do
                 replay.index = replay.index + 1
-                if replay.index > #replay.entries then
-                    self.object:remove()
-                    return
-                end
+
+            end
+            if replay.index == #replay.entries and replay.time > replay.entries[replay.index].time then
+                self.object:remove()
+                return
             end
             player_data = {
-                target = replay.entries[replay.index].target
+                target = replay.entries[replay.index].target,
+                strength = replay.entries[replay.index].strength
             }
         else
             self.object:remove()
@@ -51,13 +52,14 @@ ax_core.agent_properties = {
         local velocity = self.object:get_velocity()
         local distance = 100
         if not player_data or not player_data.target then
-            -- Apply basic gravity if there's no attractor active
+            -- Apply basic gravity if there's no target active
             velocity.y = velocity.y + (physics.gravity * dtime)
             self.object:set_velocity(velocity)
         else
             -- Physics Model
             local current_pos = self.object:get_pos()
             local target_pos = player_data.target
+            local target_strength = player_data.strength
             local vector_to_target = vector.subtract(target_pos, current_pos)
             distance = vector.length(vector_to_target)
             
@@ -68,7 +70,7 @@ ax_core.agent_properties = {
             end
             local direction = vector.normalize(vector_to_target)
             local gravity_force = vector.new(0, physics.mass * physics.gravity, 0)
-            local pull_force = vector.multiply(direction, physics.strength)
+            local pull_force = vector.multiply(direction, target_strength)
             local damping_force = vector.multiply(velocity, physics.air_resistance)
             total_force = vector.add(vector.add(gravity_force, pull_force), damping_force)
 
@@ -95,7 +97,7 @@ ax_core.agent_properties = {
             velocity = vector.add(velocity, vector.multiply(vector.subtract(vector.multiply(velocity, vector.new(0,1,0)),velocity),(dtime / physics.friction)))
         end
         -- Stop moving when close to prevent oscilation
-        if vector.length(velocity) < 1 and distance < 4 and physics.strength ~= 0 then
+        if vector.length(velocity) < 1 and distance < 4 then
             velocity = vector.zero()
         end
 
@@ -154,8 +156,11 @@ function ax_core.click(itemstack, user, pointed_thing)
         if player_name then
             if pointed_thing and pointed_thing.type == "node" then
                 local target_position = pointed_thing.under
-                if core.get_node(target_position).name == "ax_core:attractor" then
-                    ax_core.set_target(player_name, target_position)
+                local target_start_string = "ax_core:target_"
+                local node_name = core.get_node(target_position).name
+                local is_target = node_name:sub(1, #target_start_string) == target_start_string
+                if is_target then
+                    ax_core.set_target(player_name, target_position, node_name:sub(#target_start_string + 1))
                     return nil
                 end
             end
@@ -165,7 +170,14 @@ function ax_core.click(itemstack, user, pointed_thing)
     return nil
 end
 
-ax_core.set_target = function(name, pos)
+ax_core.set_target = function(name, pos, target_name)
+    local strength_values = {
+        attractor = 100,
+        weak_attractor = 50,
+        repulsor = -80,
+    }
+    local strength = strength_values[target_name]
+
     if ax_core.players[name].replay then
         local replay = ax_core.players[name].replay
         if (#replay.entries == 0) or
@@ -173,11 +185,13 @@ ax_core.set_target = function(name, pos)
             (replay.entries[#replay.entries].target ~= nil and not vector.equals(replay.entries[#replay.entries].target, pos)) then
             table.insert(replay.entries, {
                 time = core.get_us_time(),
-                target = pos
+                target = pos,
+                strength = strength
             })
         end
     end
     ax_core.players[name].target = pos
+    ax_core.players[name].strength = strength
 end
 
 core.register_tool("ax_core:gun", {

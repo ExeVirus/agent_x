@@ -41,8 +41,18 @@ reg_node("cage", {
     paramtype = "none",
     tiles = {},
 })
-reg_node("attractor", {
+reg_node("target_attractor", {
     tiles = {"glow_red.png^[colorize:blue:255"},
+    light_source = 9,
+    pointable = true,
+})
+reg_node("target_weak_attractor", {
+    tiles = {"glow_red.png^[colorize:blue:120"},
+    light_source = 9,
+    pointable = true,
+})
+reg_node("target_repulsor", {
+    tiles = {"glow_red.png"},
     light_source = 9,
     pointable = true,
 })

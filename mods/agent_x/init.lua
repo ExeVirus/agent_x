@@ -13,7 +13,8 @@
 ax_core = {} -- global table for other dependent mod access
 ax_core.buildMode = false -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
 ax_core.levels = {}
-ax_core.modpath = core.get_modpath("ax_core")
+ax_core.mod_path = core.get_modpath(core.get_current_modname())
+ax_core.mod_storage = core.get_mod_storage()
 
 ------------------------------------------------------
 -- This really should exist in core, builtin luanti
@@ -24,13 +25,12 @@ table.merge = function(dest, src)
     return ret_val
 end
 
--- order doesn't matter, so alphabetized:
-dofile(ax_core.modpath .. "/camera.lua")
-dofile(ax_core.modpath .. "/chat_commands.lua")
-dofile(ax_core.modpath .. "/nodes.lua")
-dofile(ax_core.modpath .. "/physics.lua")
-dofile(ax_core.modpath .. "/replay.lua")
-dofile(ax_core.modpath .. "/startup.lua")
+dofile(ax_core.mod_path .. "/camera.lua")
+dofile(ax_core.mod_path .. "/chat_commands.lua")
+dofile(ax_core.mod_path .. "/nodes.lua")
+dofile(ax_core.mod_path .. "/physics.lua")
+dofile(ax_core.mod_path .. "/replay.lua")
+dofile(ax_core.mod_path .. "/startup.lua")
 
 -- -------------------
 -- -- Main Menu and startup

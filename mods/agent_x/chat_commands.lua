@@ -20,7 +20,7 @@ core.register_chatcommand("ax",
     end
 })
 
-if ax_core.buildMode then
+-- if ax_core.buildMode then
 
 core.register_chatcommand("cage_neons", 
 {
@@ -137,4 +137,4 @@ core.register_chatcommand("camera_loop",
     end
 })
 
-end
+-- end

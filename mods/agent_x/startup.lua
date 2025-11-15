@@ -4,7 +4,7 @@
 local world_path = core.get_worldpath()
 local f = io.open(world_path .. "/env_meta.txt", "r")
 if f == nil or not io.close(f) then
-    core.cpdir(ax_core.modpath.."/map", world_path)
+    core.cpdir(ax_core.mod_path.."/map", world_path)
 end
 
 core.register_on_joinplayer(function(player)
