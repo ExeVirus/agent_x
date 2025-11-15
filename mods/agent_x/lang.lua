@@ -23,6 +23,7 @@
 -- circle(time,center_x,center_z,arc_speed,y_speed)
 -- circle_look(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz)
 -- circle_look_line(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed)
+-- sound{time,sound,gain,loop,play_time}
 --
 
 ax_core.lang = {}
@@ -53,6 +54,7 @@ ax_core.lang.command_num_args = {
     circle = 5,
     circle_look = 8,
     circle_look_line = 9,
+    sound = 5,
 }
 
 ax_core.lang.commands = {
@@ -134,13 +136,26 @@ ax_core.lang.commands = {
             ax_core.lang.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
         end
     end,
+    sound = function(player,orig_pos,dtime,sound,gain,loop,play_time)
+        table.insert(ax_core.playing_sounds,{
+            play_time = play_time,
+            played_for_time = 0,
+            handle = core.sound_play(sound,{
+                gain = gain,
+                loop = loop ~= 0,
+                to_player = player:get_player_name(),
+            })
+        })
+    end,
 }
 ax_core.lang.players = {}
+ax_core.playing_sounds = {}
 
 function ax_core.parse_params(params)
     local commands = {}
     local command_pattern = "^%s*[%w_]+%s*$"
     local value_pattern = "^%s*[+-]?%d*%.?%d+%s*$"
+    local string_pattern = "^%s*\"(.-)\"%s*$"
 
     for command_group in params:gmatch("{([^}]+)}") do
         local parts = {}
@@ -158,8 +173,11 @@ function ax_core.parse_params(params)
                 local all_values_valid = true
                 for i = 2, #parts do
                     local numeric_val_str = parts[i]:match(value_pattern)
+                    local string_val_str = parts[i]:match(string_pattern)
                     if numeric_val_str then
                         table.insert(command_info.args, tonumber(numeric_val_str))
+                    elseif string_val_str then
+                        table.insert(command_info.args, tostring(string_val_str))
                     else
                         all_values_valid = false
                         break
@@ -172,10 +190,10 @@ function ax_core.parse_params(params)
                         table.insert(commands, command_info)
                     else
                         return nil, "Invalid number of args for command "..command_info.command
-                                     ..", expected "..num_args.." , command group: " .. command_group
+                                     ..", got "..#command_info.args..", expected "..num_args.." , command group: " .. command_group
                     end
                 else
-                    return nil, "Invalid numeric value in group: " .. command_group
+                    return nil, "Invalid value in group: " .. command_group
                 end
             else
                 return nil, "Invalid command name in group: " .. command_group
@@ -234,6 +252,14 @@ core.register_globalstep(function(dtime)
                     end
                     script.time_remaining = script.commands[script.index].args[1]
                 end
+            end
+        end
+    end
+    for _, playing_sound in pairs(ax_core.playing_sounds) do
+        if playing_sound.play_time > 0 then
+            playing_sound.played_for_time = playing_sound.played_for_time + dtime
+            if playing_sound.played_for_time > playing_sound.play_time then
+                core.sound_stop(playing_sound.handle)
             end
         end
     end
