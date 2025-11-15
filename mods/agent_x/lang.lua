@@ -1,13 +1,32 @@
---  █████  ██   ██      ██████  █████  ███    ███ ███████ ██████   █████
--- ██   ██  ██ ██      ██      ██   ██ ████  ████ ██      ██   ██ ██   ██
--- ███████   ███       ██      ███████ ██ ████ ██ █████   ██████  ███████
--- ██   ██  ██ ██      ██      ██   ██ ██  ██  ██ ██      ██   ██ ██   ██
--- ██   ██ ██   ██      ██████ ██   ██ ██      ██ ███████ ██   ██ ██   ██
--- 
--- MIT License, See License.txt
+--    ░███    ░██    ░██    ░██            ░███    ░███    ░██   ░██████
+--   ░██░██    ░██  ░██     ░██           ░██░██   ░████   ░██  ░██   ░██
+--  ░██  ░██    ░██░██      ░██          ░██  ░██  ░██░██  ░██ ░██
+-- ░█████████    ░███       ░██         ░█████████ ░██ ░██ ░██ ░██  █████
+-- ░██    ░██   ░██░██      ░██         ░██    ░██ ░██  ░██░██ ░██     ██
+-- ░██    ░██  ░██  ░██     ░██         ░██    ░██ ░██   ░████  ░██  ░███
+-- ░██    ░██ ░██    ░██    ░██████████ ░██    ░██ ░██    ░███   ░█████░█
+--
+-- A very not clean implementation of a decent scripting language for Agent X
+--
+-- All functions take a time parameter, which is time ni seconds to run this command for
+-- For instant functions, let pos(), this is the time to sit around doing nothing before
+-- the next command
+--
+-- # Functions:
+--
+-- pos(time,x,y,z)
+-- fov(time,fov)
+-- look(time,x,y,z)
+-- line(time,x,y,z,speed)
+-- line_look(time,x,y,z,speed,lookx,looky,lookz)
+-- line_look_line(time,x,y,z,speed,lookx,looky,lookz,look_speed)
+-- circle(time,center_x,center_z,arc_speed,y_speed)
+-- circle_look(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz)
+-- circle_look_line(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed)
+--
 
-ax_camera = {}
-local function get_eye_offset(player)
+ax_core.lang = {}
+function ax_core.get_eye_offset(player)
     local camera_mode = player:get_camera().mode
     if camera_mode == "any" then
         camera_mode = "first"
@@ -23,7 +42,8 @@ local function get_eye_offset(player)
     eye_pos = vector.add(eye_pos, vector.divide(lookup[camera_mode], 10)) -- eye offsets are in block space (10x), transform them back to metric
     return eye_pos
 end
-ax_camera.command_num_args = {
+
+ax_core.lang.command_num_args = {
     pos = 4,
     look = 4,
     fov = 2,
@@ -34,18 +54,19 @@ ax_camera.command_num_args = {
     circle_look = 8,
     circle_look_line = 9,
 }
-ax_camera.commands = {
+
+ax_core.lang.commands = {
     pos = function(player,orig_pos,dtime,x,y,z)
         player:set_pos(vector.new(x,y,z))
     end,
     look = function(player,orig_pos,dtime,x,y,z)
         local look_location = vector.new(x,y,z)
-        local look_dir = vector.direction(vector.add(orig_pos, get_eye_offset(player)), look_location)
+        local look_dir = vector.direction(vector.add(orig_pos, ax_core.get_eye_offset(player)), look_location)
         local pitch = -math.asin(look_dir.y)
         local yaw = math.atan2(-look_dir.x, look_dir.z)
         player:set_look_horizontal(yaw)
         player:set_look_vertical(pitch)
-        ax_camera.players[player:get_player_name()].last_look = look_location
+        ax_core.lang.players[player:get_player_name()].last_look = look_location
     end,
     fov = function(player,orig_pos,dtime,fov)
         player:set_fov(fov)
@@ -64,20 +85,20 @@ ax_camera.commands = {
         end
     end,
     line_look = function(player,orig_pos,dtime,x,y,z,speed,lookx,looky,lookz)
-        local new_pos = ax_camera.commands.line(player,orig_pos,dtime,x,y,z,speed)
-        ax_camera.commands.look(player,new_pos,dtime,lookx,looky,lookz)
+        local new_pos = ax_core.lang.commands.line(player,orig_pos,dtime,x,y,z,speed)
+        ax_core.lang.commands.look(player,new_pos,dtime,lookx,looky,lookz)
     end,
     line_look_line = function(player,orig_pos,dtime,x,y,z,speed,lookx,looky,lookz,look_speed)
-        local new_pos = ax_camera.commands.line(player,orig_pos,dtime,x,y,z,speed)
-        local last_look_location = ax_camera.players[player:get_player_name()].last_look
+        local new_pos = ax_core.lang.commands.line(player,orig_pos,dtime,x,y,z,speed)
+        local last_look_location = ax_core.lang.players[player:get_player_name()].last_look
         local target_look_location = vector.new(lookx,looky,lookz)
         local distance_this_tick = look_speed*dtime
         if vector.distance(last_look_location, target_look_location) > distance_this_tick then
             local new_look_offset = vector.multiply(vector.direction(last_look_location,target_look_location),distance_this_tick)
             local new_look = vector.add(last_look_location,new_look_offset)
-            ax_camera.commands.look(player,new_pos,dtime,new_look.x,new_look.y,new_look.z)
+            ax_core.lang.commands.look(player,new_pos,dtime,new_look.x,new_look.y,new_look.z)
         else
-            ax_camera.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
+            ax_core.lang.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
         end
     end,
     circle = function(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed)
@@ -97,26 +118,26 @@ ax_camera.commands = {
         return new_pos
     end,
     circle_look = function(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed,lookx,looky,lookz)
-        local new_pos = ax_camera.commands.circle(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed)
-        ax_camera.commands.look(player,new_pos,dtime,lookx,looky,lookz)
+        local new_pos = ax_core.lang.commands.circle(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed)
+        ax_core.lang.commands.look(player,new_pos,dtime,lookx,looky,lookz)
     end,
     circle_look_line = function(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed,lookx,looky,lookz,look_speed)
-        local new_pos = ax_camera.commands.circle(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed)
-        local last_look_location = ax_camera.players[player:get_player_name()].last_look
+        local new_pos = ax_core.lang.commands.circle(player,orig_pos,dtime,center_x,center_z,arc_speed,y_speed)
+        local last_look_location = ax_core.lang.players[player:get_player_name()].last_look
         local target_look_location = vector.new(lookx,looky,lookz)
         local distance_this_tick = look_speed*dtime
         if vector.distance(last_look_location, target_look_location) > distance_this_tick then
             local new_look_offset = vector.multiply(vector.direction(last_look_location,target_look_location),distance_this_tick)
             local new_look = vector.add(last_look_location,new_look_offset)
-            ax_camera.commands.look(player,new_pos,dtime,new_look.x,new_look.y,new_look.z)
+            ax_core.lang.commands.look(player,new_pos,dtime,new_look.x,new_look.y,new_look.z)
         else
-            ax_camera.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
+            ax_core.lang.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
         end
     end,
 }
-ax_camera.players = {}
+ax_core.lang.players = {}
 
-function parse_params(params)
+function ax_core.parse_params(params)
     local commands = {}
     local command_pattern = "^%s*[%w_]+%s*$"
     local value_pattern = "^%s*[+-]?%d*%.?%d+%s*$"
@@ -129,7 +150,7 @@ function parse_params(params)
         -- A valid group must have at least a command and a time
         if #parts >= 2 then 
             local command_name = parts[1]:match(command_pattern)
-            if command_name and ax_camera.commands[command_name] then
+            if command_name and ax_core.lang.commands[command_name] then
                 local command_info = {
                     command = command_name,
                     args = {}
@@ -146,7 +167,7 @@ function parse_params(params)
                 end
 
                 if all_values_valid then
-                    local num_args = ax_camera.command_num_args[command_info.command]
+                    local num_args = ax_core.lang.command_num_args[command_info.command]
                     if #command_info.args == num_args then
                         table.insert(commands, command_info)
                     else
@@ -167,16 +188,16 @@ function parse_params(params)
     return commands
 end
 
-ax_camera.camera = function(player, params, mode)
+function ax_core.lang.script(player, params, mode)
     if player ~= nil and type(params) == "string" then
-        local commands, error = parse_params(params)
+        local commands, error = ax_core.parse_params(params)
         local player_name = player:get_player_name()
         if error ~= nil then
             core.chat_send_player(player_name, error)
             return
         end
         if commands ~= nil and #commands > 0 then
-            ax_camera.players[player_name] = {
+            ax_core.lang.players[player_name] = {
                 commands = commands,
                 mode = mode,
                 index = 1,
@@ -188,30 +209,30 @@ ax_camera.camera = function(player, params, mode)
 end
 
 core.register_globalstep(function(dtime)
-    for player_name, camera in pairs(ax_camera.players) do
-        if camera.commands ~= nil then
+    for player_name, script in pairs(ax_core.lang.players) do
+        if script.commands ~= nil then
             local remaining_dtime = dtime
             local player = core.get_player_by_name(player_name)
             while remaining_dtime > 0 do
-                local current_command = camera.commands[camera.index]
+                local current_command = script.commands[script.index]
                 local command_name = current_command.command
-                local num_args = ax_camera.command_num_args[command_name]
-                ax_camera.commands[command_name](player, player:get_pos(), remaining_dtime, unpack(current_command.args,2,num_args))
-                if remaining_dtime < camera.time_remaining then
-                    camera.time_remaining = camera.time_remaining - remaining_dtime
+                local num_args = ax_core.lang.command_num_args[command_name]
+                ax_core.lang.commands[command_name](player, player:get_pos(), remaining_dtime, unpack(current_command.args,2,num_args))
+                if remaining_dtime < script.time_remaining then
+                    script.time_remaining = script.time_remaining - remaining_dtime
                     remaining_dtime = 0
                 else
-                    remaining_dtime = remaining_dtime - camera.time_remaining
-                    camera.index = camera.index + 1
-                    if camera.index > #camera.commands then
-                        if camera.mode == "one_shot" then
-                            camera.commands = nil
-                            break -- we're done here
+                    remaining_dtime = remaining_dtime - script.time_remaining
+                    script.index = script.index + 1
+                    if script.index > #script.commands then
+                        if script.mode == "one_shot" then
+                            script.commands = nil
+                            break
                         else
-                            camera.index = 1
+                            script.index = 1
                         end
                     end
-                    camera.time_remaining = camera.commands[camera.index].args[1]
+                    script.time_remaining = script.commands[script.index].args[1]
                 end
             end
         end

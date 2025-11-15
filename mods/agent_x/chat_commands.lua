@@ -117,23 +117,23 @@ core.register_chatcommand("phys",
     end
 })
 
-core.register_chatcommand("camera", 
+core.register_chatcommand("script",
 {
     params = "{pos|look|fov,seconds,val,val,val}{}{}{}",
-    description = "Camera Control API, groups of {} are executed in order until completion",
+    description = "Agent X Script API, groups of {} are executed in order until completion",
     privs = {},
     func = function(name, params)
-        ax_camera.camera(core.get_player_by_name(name), params, "one_shot")
+        ax_core.lang.script(core.get_player_by_name(name), params, "one_shot")
     end
 })
 
-core.register_chatcommand("camera_loop", 
+core.register_chatcommand("script_loop",
 {
     params = "{pos|look|fov,seconds,val,val,val}{}{}{}",
-    description = "Camera Control API, groups of {} are executed in order until completion",
+    description = "Agent X Script API, groups of {} are executed in order until completion",
     privs = {},
     func = function(name, params)
-        ax_camera.camera(core.get_player_by_name(name), params, "loop")
+        ax_core.lang.script(core.get_player_by_name(name), params, "loop")
     end
 })
 

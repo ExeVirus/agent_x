@@ -25,8 +25,8 @@ table.merge = function(dest, src)
     return ret_val
 end
 
-dofile(ax_core.mod_path .. "/camera.lua")
 dofile(ax_core.mod_path .. "/chat_commands.lua")
+dofile(ax_core.mod_path .. "/lang.lua")
 dofile(ax_core.mod_path .. "/nodes.lua")
 dofile(ax_core.mod_path .. "/physics.lua")
 dofile(ax_core.mod_path .. "/replay.lua")
