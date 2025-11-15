@@ -17,7 +17,7 @@ Next Steps:
 ~~8. Change the name to replays from recordings~~
 ~~9. Extend physics to have not hardcoded strength values, affects replays~~
 ~~10. Create agent.lua that has the base player agent, and a replay agent, the replay agent doesn't collide~~
-11. Extend ax_core language extended with sound (non-blocking), replay(non-blocking), replay_loop(non-blocking), checkpoint(non-blocking), start(non-blocking) functions (start is pos of player agent and attaches us)
+11. Extend ax_core language extended with ~~sound (non-blocking)~~, ~~replay(non-blocking)~~, ~~replay_loop(non-blocking)~~, attach/detach(non-blocking) functions (attaches us to an ax_core:agent to play, saves our pos to reset to later)
 12. Extend ax_core lanuage with text(non-blocking) command, which will show a formspec for a specified duration, and uses a standard animated image that "reveals" the text at a specified speed.
 13. Extend ax_core languge with title(non-blocking) command, which will show a formspec for a specified duration, and uses an animated image to fade it in and back out, based on that duration.
 14. Extend ax_core language with detect (player_agent within the bounding box, blocking)

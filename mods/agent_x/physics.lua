@@ -32,11 +32,17 @@ ax_core.agent_properties = {
             replay.time = replay.time + dtime
             while #replay.entries >= replay.index+1 and replay.time > replay.entries[replay.index+1].time do
                 replay.index = replay.index + 1
-
             end
             if replay.index == #replay.entries and replay.time > replay.entries[replay.index].time then
-                self.object:remove()
-                return
+                if replay.loop then
+                    replay.index = 1
+                    replay.time = 0
+                    self.object:set_pos(replay.starting_pos)
+                    self.object:set_velocity(vector.zero())
+                else
+                    self.object:remove()
+                    return
+                end
             end
             player_data = {
                 target = replay.entries[replay.index].target,

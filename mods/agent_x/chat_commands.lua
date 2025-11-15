@@ -86,6 +86,16 @@ core.register_chatcommand("play",
     end
 })
 
+core.register_chatcommand("play_loop",
+{
+    params = "<replay name>",
+    description = "Playback AX replay",
+    privs = {},
+    func = function(name, params)
+        return ax_core.play_replay(params, true)
+    end
+})
+
 core.register_chatcommand("phys",
 {
     params = "str,mass,air,gravity,friction_time",

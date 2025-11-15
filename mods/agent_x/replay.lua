@@ -45,13 +45,13 @@ ax_core.stop_replay = function(name)
     end
 end
 
-ax_core.play_replay = function(params)
-    if string.match(params, "^%w+$") == nil then
+ax_core.play_replay = function(replay_name, loop)
+    if string.match(replay_name, "^%w+$") == nil then
         return false, "Improper Arguments: 1 arg, alphanumerics only"
     end
-    local replay = core.deserialize(ax_core.mod_storage:get_string(params))
+    local replay = core.deserialize(ax_core.mod_storage:get_string(replay_name))
     if replay == nil then
-        return false, "No replay '" .. params .. "' Found."
+        return false, "No replay '" .. replay_name .. "' Found."
     end
     local entity = core.add_entity(replay.starting_pos, "ax_core:agent_replay")
     if entity then
@@ -59,6 +59,8 @@ ax_core.play_replay = function(params)
             index = 1,
             time = 0,
             entries = table.copy(replay.entries),
+            starting_pos = replay.starting_pos,
+            loop = loop or false
         }
         return true
     else

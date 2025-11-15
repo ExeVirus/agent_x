@@ -55,6 +55,7 @@ ax_core.lang.command_num_args = {
     circle_look = 8,
     circle_look_line = 9,
     sound = 5,
+    replay = 3,
 }
 
 ax_core.lang.commands = {
@@ -146,6 +147,9 @@ ax_core.lang.commands = {
                 to_player = player:get_player_name(),
             })
         })
+    end,
+    replay = function(player,orig_pos,dtime,replay_name,loop)
+        ax_core.play_replay(replay_name, loop ~= 0)
     end,
 }
 ax_core.lang.players = {}
