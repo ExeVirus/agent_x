@@ -11,7 +11,7 @@
 -- Everything can be modified, public API
 -----------------------------------------
 ax_core = {} -- global table for other dependent mod access
-ax_core.buildMode = false -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
+ax_core.buildMode = true -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
 ax_core.mod_path = core.get_modpath(core.get_current_modname())
 ax_core.mod_storage = core.get_mod_storage()
 
@@ -30,70 +30,6 @@ dofile(ax_core.mod_path .. "/nodes.lua")
 dofile(ax_core.mod_path .. "/physics.lua")
 dofile(ax_core.mod_path .. "/replay.lua")
 dofile(ax_core.mod_path .. "/startup.lua")
-
--- -------------------
--- -- Main Menu and startup
--- -------------------
--- minetest.register_on_joinplayer(function(player)
---     -- Show off little Lady!
---     player:set_properties({
---         mesh = "lady_assets_littlelady.obj",
---         textures = {"lady_assets_ladybug.png"},
---         visual = "mesh",
---         visual_size = {x = 1, y = 1},
---         collisionbox = {-0.24, 0.0, -0.26, 0.24, 1, 0.26},
---         stepheight = 0.55,
---         eye_height = 1,
---     })
---     -- Turn off builtin crap
---     player:hud_set_flags(
---         {
---             hotbar = false,
---             healthbar = false,
---             crosshair = false,
---             wielditem = false,
---             breathbar = false,
---             minimap = false,
---             minimap_radar = false,
---         }
---     )
---     --set to always sunny in CalifornIA
---     player:override_day_night_ratio(1)
---     player:set_stars({visible=false})
---     player:set_moon({visible=false})
---     player:set_sun({visible=false})
-
--- --  1. Turn off player gravity and stop them from falling
---     player:set_physics_override({
---         speed = 0.0,
---         jump = 0.0,
---         gravity = 0.0,
---         sneak = false,
---     })
--- --  2. Change the player's "I" in-game menu to quit to main menu, reset, quit, and credits
---     player:set_inventory_formspec(table.concat(
---         {
---             "formspec_version[3]",
---             "size[8,9]",
---             "position[0.5,0.5]",
---             "anchor[0.5,0.5]",
---             "no_prepend[]",
---             "bgcolor[",background_primary_c,";both;#AAAAAA40]",
---             "style_type[button;border=false;bgimg=back.png^[multiply:",primary_c,";bgimg_middle=10,10;textcolor=",on_primary_c,"]",
---             "style_type[button:hovered;bgimg=back.png^[multiply:",hover_primary_c,";bgcolor=#FFF]",
---             "button_exit[0.6,0.25;6.8,1;menu;Quit to Menu]",
---             "button_exit[0.6,1.5;6.8,1;reset;Reset to start]",
---             "button_exit[0.6,2.75;6.8,1;view;View Starting Message]",
---             "hypertext[2,4;4,4.75;;<global halign=center color=",primary_c," size=32 font=Regular>Credits<global halign=center color=",on_secondary_c," size=16 font=Regular>\n",
---             "Original Game by ExeVirus\n",
---             "Source code is MIT License, 2021\n",
---             "Media/Music is:\nSee LICENSE Files\n",
---             "Music coming to Spotify and other streaming services!\n]",
---         }
---     ))
--- -- 3. Display the main Menu
---     minetest.show_formspec(player:get_player_name(),"menu",main_menu())
--- end)
 
 -- -------------------
 -- --On receive

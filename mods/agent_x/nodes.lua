@@ -56,6 +56,14 @@ reg_node("target_repulsor", {
     light_source = 9,
     pointable = true,
 })
+local laser_field_tile = { name="laser_field.png", animation={ type = "vertical_frames", aspect_w = 32, aspect_h = 32,length = 1.0, } }
+reg_node("field", {
+    tiles = { laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile },
+    light_source = 14,
+    use_texture_alpha = "blend",
+    drawtype = "liquid",
+    post_effect_color = "#F006",
+})
 ax_core.lights = {}
 local function makeAirLightNode(name, brightness)
     table.insert(ax_core.lights, name)
