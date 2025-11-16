@@ -17,18 +17,20 @@ Next Steps:
 ~~8. Change the name to replays from recordings~~
 ~~9. Extend physics to have not hardcoded strength values, affects replays~~
 ~~10. Create agent.lua that has the base player agent, and a replay agent, the replay agent doesn't collide~~
-11. Extend ax_core language extended with ~~sound (non-blocking)~~, ~~replay(non-blocking)~~, ~~replay_loop(non-blocking)~~, attach/detach(non-blocking) functions (attaches us to an ax_core:agent to play, saves our pos to reset to later)
-12. Extend ax_core lanuage with text(non-blocking) command, which will show a formspec for a specified duration, and uses a standard animated image that "reveals" the text at a specified speed.
-13. Extend ax_core languge with title(non-blocking) command, which will show a formspec for a specified duration, and uses an animated image to fade it in and back out, based on that duration.
-14. Extend ax_core language with detect (player_agent within the bounding box, blocking)
+~~11. Extend ax_core language extended with ~~sound (non-blocking)~~, ~~replay(non-blocking), ~~replay_loop(non-blocking)~~, ~~attach/detach(non-blocking) functions (attaches us to an ax_core:agent to play, saves our pos to reset to later)~~
+~~12. Extend ax_core lanuage with text(non-blocking) command, which will show a formspec for a specified duration, and uses a standard animated image that "reveals" the text at a specified speed.~~
+~~13. Extend ax_core languge with title(non-blocking) command, which will show a formspec for a specified duration, and uses an animated image to fade it in and back out, based on that duration.~~
+~~14. Extend ax_core language with detect (player_agent within the bounding box, blocking)~~
 ~~15. Get Voice for Voicing the narrator~~
 ~~16. Create purple weak attractor, and red repulsor~~
 17. Create laser field node that when we crash into we go to last checkpoint (pos, index in ax_core lang)
 18. When we crash into a laser field, create an explosion set of particles (replay_agent should do this as well)
 19. Tune the heck out of physics
-20. Create Main Menu "level"
-21. Create Main Menu replay_loop
-22. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
-23. Create Intro Sequence (level 0)
-24. Create Tutorial Level 1 (Movement)
-25. Create Tutorial Level 2 (Laser Fields)
+20. Need particle and sound effects for attractor
+21. Need better robot model
+22. Create Main Menu "level"
+23. Create Main Menu replay_loop
+24. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
+25. Create Intro Sequence (level 0)
+26. Create Tutorial Level 1 (Movement)
+27. Create Tutorial Level 2 (Laser Fields)

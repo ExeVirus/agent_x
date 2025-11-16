@@ -10,6 +10,7 @@ end
 core.register_on_joinplayer(function(player)
     local player_name = player:get_player_name()
     ax_core.players[player_name] = {}
+    ax_core.lang.players[player_name] = {}
     player:override_day_night_ratio(0)
     player:set_stars({visible=false})
     player:set_moon({visible=false})

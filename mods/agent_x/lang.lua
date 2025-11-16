@@ -14,19 +14,26 @@
 --
 -- # Functions:
 --
--- pos(time,x,y,z)
--- fov(time,fov)
--- look(time,x,y,z)
--- line(time,x,y,z,speed)
--- line_look(time,x,y,z,speed,lookx,looky,lookz)
--- line_look_line(time,x,y,z,speed,lookx,looky,lookz,look_speed)
--- circle(time,center_x,center_z,arc_speed,y_speed)
--- circle_look(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz)
--- circle_look_line(time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed)
--- sound{time,sound,gain,loop,play_time}
--- replay{time,replay_name,loop}
--- attach{time}
--- detach{time}
+-- {pos,time,x,y,z}
+-- {fov,time,fov}
+-- {look,time,x,y,z}
+-- {line,time,x,y,z,speed}
+-- {line_look,time,x,y,z,speed,lookx,looky,lookz}
+-- {line_look_line,time,x,y,z,speed,lookx,looky,lookz,look_speed}
+-- {circle,time,center_x,center_z,arc_speed,y_speed}
+-- {circle_look,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz}
+-- {circle_look_line,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed}
+-- {sound,time,sound,gain,loop,play_time}
+-- {replay,time,replay_name,loop}
+-- {attach,time}
+-- {detach,time}
+-- {title,time,text,color(#RRGGBB),fadein,steady,fadeout}
+-- {text,time,text,word_time,extra_time}
+-- {wait,time}
+-- {detect,time,x1,y1,z1,x2,y2,z2}
+
+-- Example Script:
+-- /script {sound`0`"welcome"``1.0`0`5} {text`0`"Welcome, Agent X, to your first mission"`0.25`1.0} {pos`0`-33`7.6`13.9} {circle_look`2.75`-18.5`4.3`-10`-0.4`-18.4`4.3`13.9}
 
 ax_core.lang = {}
 function ax_core.get_eye_offset(player)
@@ -60,6 +67,10 @@ ax_core.lang.command_num_args = {
     replay = 3,
     attach = 1,
     detach = 1,
+    title = 6,
+    text = 4,
+    wait = 1,
+    detect = 7,
 }
 
 ax_core.lang.commands = {
@@ -161,6 +172,58 @@ ax_core.lang.commands = {
     detach = function(player,orig_pos,dtime)
         ax_core.disable(player:get_player_name())
     end,
+    title = function(player,orig_pos,dtime,text,color,fadein,steady,fadeout)
+        local player_name = player:get_player_name()
+        ax_core.lang.players[player_name].title = {
+            text = text,
+            color = color,
+            fadein = fadein,
+            steady = fadein + steady,
+            fadeout = fadein + steady + fadeout,
+            current_time = 0
+        }
+    end,
+    text = function(player,orig_pos,dtime,text,word_time,extra_time)
+        local player_name = player:get_player_name()
+        local text_array = {}
+        for word in string.gmatch(text, "%S+") do
+            table.insert(text_array, word)
+        end
+        if (#text_array > 0) then
+            ax_core.lang.players[player_name].text = {
+                text_array = text_array,
+                word_time = word_time,
+                total_time = word_time * #text_array + extra_time,
+                current_time = 0
+            }
+        end
+    end,
+    wait = function(player,orig_pos,dtime)
+    end,
+    detect = function(player,orig_pos,dtime,x1,y1,z1,x2,y2,z2)
+        local min = vector.new(
+            math.min(x1, x2),
+            math.min(y1, y2),
+            math.min(z1, z2)
+        )
+        local max = vector.new(
+            math.max(x1, x2),
+            math.max(y1, y2),
+            math.max(z1, z2)
+        )
+        if vector.in_area(player:get_pos(), min, max) then
+            local script = ax_core.lang.players[player:get_player_name()].script
+            script.index = script.index + 1
+            if script.index > #script.commands then
+                if script.mode == "one_shot" then
+                    script.commands = nil
+                else
+                    script.index = 1
+                end
+            end
+            script.time_remaining = script.commands[script.index].args[1]
+        end
+    end
 }
 ax_core.lang.players = {}
 ax_core.playing_sounds = {}
@@ -173,7 +236,7 @@ function ax_core.parse_params(params)
 
     for command_group in params:gmatch("{([^}]+)}") do
         local parts = {}
-        for part in command_group:gmatch("([^,]+)") do
+        for part in command_group:gmatch("([^`]+)") do
             table.insert(parts, part)
         end
         -- A valid group must have at least a command and a time
@@ -185,6 +248,7 @@ function ax_core.parse_params(params)
                     args = {}
                 }
                 local all_values_valid = true
+                local invalid_value = ""
                 for i = 2, #parts do
                     local numeric_val_str = parts[i]:match(value_pattern)
                     local string_val_str = parts[i]:match(string_pattern)
@@ -194,6 +258,7 @@ function ax_core.parse_params(params)
                         table.insert(command_info.args, tostring(string_val_str))
                     else
                         all_values_valid = false
+                        invalid_value = parts[i]
                         break
                     end
                 end
@@ -207,7 +272,7 @@ function ax_core.parse_params(params)
                                      ..", got "..#command_info.args..", expected "..num_args.." , command group: " .. command_group
                     end
                 else
-                    return nil, "Invalid value in group: " .. command_group
+                    return nil, "Invalid value: `"..invalid_value.."` in group: " .. command_group
                 end
             else
                 return nil, "Invalid command name in group: " .. command_group
@@ -229,7 +294,7 @@ function ax_core.lang.script(player, params, mode)
             return
         end
         if commands ~= nil and #commands > 0 then
-            ax_core.lang.players[player_name] = {
+            ax_core.lang.players[player_name].script = {
                 commands = commands,
                 mode = mode,
                 index = 1,
@@ -239,35 +304,98 @@ function ax_core.lang.script(player, params, mode)
         end
     end
 end
-
+ax_core.make_title_formspec = function(title,color,zero_to_one_shown)
+    local alpha_channel = string.format("%02X", math.floor(zero_to_one_shown * 255))
+    return table.concat({
+        "formspec_version[10]",
+        "size[18,4,false]",
+        "position[0.5,0]",
+        "anchor[0.5,0]",
+        "no_prepend[]",
+        "bgcolor[#0000]",
+        "hypertext[0,0;18,4;;<global color="..color..alpha_channel.." halign=center valign=top font=normal size=150>"..title.."]",
+    })
+end
+ax_core.make_text_formspec = function(text)
+    return table.concat({
+        "formspec_version[10]",
+        "size[18,2,false]",
+        "position[0.5,0]",
+        "anchor[0.5,0]",
+        "no_prepend[]",
+        "bgcolor[#000B]",
+        "hypertext[0.1,0;17.8,2;;<global color=#00E32D halign=left valign=top font=normal size=30>",
+        text,"]",
+    })
+end
 core.register_globalstep(function(dtime)
-    for player_name, script in pairs(ax_core.lang.players) do
-        if script.commands ~= nil then
+    for player_name, player_data in pairs(ax_core.lang.players) do
+        if player_data.script ~= nil and player_data.script.commands ~= nil then
+            local script = player_data.script
             local remaining_dtime = dtime
             local player = core.get_player_by_name(player_name)
             while remaining_dtime > 0 do
                 local current_command = script.commands[script.index]
                 local command_name = current_command.command
                 local num_args = ax_core.lang.command_num_args[command_name]
+                local before_command_index = script.index
                 ax_core.lang.commands[command_name](player, player:get_pos(), remaining_dtime, unpack(current_command.args,2,num_args))
-                if remaining_dtime < script.time_remaining then
-                    script.time_remaining = script.time_remaining - remaining_dtime
-                    remaining_dtime = 0
-                else
-                    remaining_dtime = remaining_dtime - script.time_remaining
-                    script.index = script.index + 1
-                    if script.index > #script.commands then
-                        if script.mode == "one_shot" then
-                            script.commands = nil
-                            break
-                        else
-                            script.index = 1
+                if script.index == before_command_index then
+                    if remaining_dtime < script.time_remaining then
+                        script.time_remaining = script.time_remaining - remaining_dtime
+                        remaining_dtime = 0
+                    else
+                        remaining_dtime = remaining_dtime - script.time_remaining
+                        script.index = script.index + 1
+                        if script.index > #script.commands then
+                            if script.mode == "one_shot" then
+                                script.commands = nil
+                                break
+                            else
+                                script.index = 1
+                            end
                         end
+                        script.time_remaining = script.commands[script.index].args[1]
                     end
-                    script.time_remaining = script.commands[script.index].args[1]
+                else
+                    remaining_dtime = 0
                 end
             end
         end
+        if player_data.title then
+            local title = player_data.title
+            title.current_time = title.current_time + dtime
+            local alpha_percent = 0
+            if title.current_time <= title.fadein then
+                alpha_percent = title.current_time / title.fadein
+            elseif title.current_time <= title.steady then
+                alpha_percent = 1
+            elseif title.current_time <= title.fadeout then
+                alpha_percent =  1 - ((title.current_time - title.steady) / (title.fadeout - title.steady))
+            else
+                player_data.title = nil
+                core.close_formspec(player_name, "title")
+                goto continue_loop
+            end
+            core.show_formspec(player_name, "title", ax_core.make_title_formspec(
+                title.text,
+                title.color,
+                alpha_percent
+            ))
+        end
+        if player_data.text then
+            local text = player_data.text
+            text.current_time = text.current_time + dtime
+            if text.current_time > text.total_time then
+                player_data.text = nil
+                core.close_formspec(player_name, "text")
+                goto continue_loop
+            end
+            core.show_formspec(player_name, "text", ax_core.make_text_formspec(
+                table.concat(text.text_array," ", 1, math.min(#text.text_array,math.floor(text.current_time / text.word_time)))
+            ))
+        end
+        ::continue_loop::
     end
     for _, playing_sound in pairs(ax_core.playing_sounds) do
         if playing_sound.play_time > 0 then
