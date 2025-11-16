@@ -57,13 +57,13 @@ ax_core.agent_properties = {
         -- If we don't have a player or target, do nothing.
         local velocity = self.object:get_velocity()
         local distance = 100
+        local current_pos = self.object:get_pos()
         if not player_data or not player_data.target then
             -- Apply basic gravity if there's no target active
             velocity.y = velocity.y + (physics.gravity * dtime)
             self.object:set_velocity(velocity)
         else
             -- Physics Model
-            local current_pos = self.object:get_pos()
             local target_pos = player_data.target
             local target_strength = player_data.strength
             local vector_to_target = vector.subtract(target_pos, current_pos)
@@ -82,10 +82,29 @@ ax_core.agent_properties = {
 
             local acceleration = vector.divide(total_force, physics.mass)
             velocity = vector.add(velocity, vector.multiply(acceleration, dtime))
+
+            -- beam effect
+            ax_core.beam(current_pos, target_pos)
         end
         local on_ground = false
         if moveresult.collides then
             for _, col in ipairs(moveresult.collisions) do
+                if col.type == "node" and core.get_node(col.node_pos).name == "ax_core:field" then
+                    core.sound_play("lava",{}, true)
+                    ax_core.lava_particles(current_pos)
+                    if self.replay then
+                        self.object:remove()
+                        return
+                    elseif self.player_name then
+                        -- revert to last enabled position
+                        self.object:set_pos(player_data.enabled_pos)
+                        local player = core.get_player_by_name(self.player_name)
+                        player:set_look_vertical(player_data.enabled_look_vertical)
+                        player:set_look_horizontal(player_data.enabled_look_horizontal)
+                        self.object:set_velocity(vector.zero())
+                        return
+                    end
+                end
                 if col.axis == "y" and velocity.y < 0 then
                     velocity.y = 0
                     on_ground = true
@@ -134,6 +153,9 @@ ax_core.enable = function(name)
             crosshair = true
         })
         ax_core.players[name].enabled = true
+        ax_core.players[name].enabled_pos = player:get_pos()
+        ax_core.players[name].enabled_look_vertical = player:get_look_vertical()
+        ax_core.players[name].enabled_look_horizontal = player:get_look_horizontal()
         local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.5,0)), "ax_core:agent")
         if entity then
             entity:get_luaentity().player_name = name
@@ -208,6 +230,12 @@ ax_core.set_target = function(name, pos, target_name)
                 strength = strength
             })
         end
+    end
+    if (pos ~= nil and not ax_core.players[name].target) or 
+       (ax_core.players[name].target and pos and not vector.equals(ax_core.players[name].target,pos)) then
+        core.sound_play("target",{}, true)
+    elseif pos == nil and ax_core.players[name].target ~= nil then
+        core.sound_play("untarget",{}, true)
     end
     ax_core.players[name].target = pos
     ax_core.players[name].strength = strength
