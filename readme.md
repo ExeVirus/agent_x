@@ -27,11 +27,13 @@ Next Steps:
 ~~18. When we crash into a laser field, create an explosion set of particles (replay_agent should do this as well)~~
 ~~19. Need particle and sound effects for attractor~~
 ~~20. Tune the heck out of physics~~
+~~27. Need better robot model~~
 
-21. Create Main Menu "level"
-22. Create Main Menu replay_loop
-23. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
-24. Create Intro Sequence (level 0)
-25. Create Tutorial Level 1 (Movement)
-26. Create Tutorial Level 2 (Laser Fields)
-27. Need better robot model
+1. Create Main Menu "level"
+2. Create Main Menu replay_loop
+3. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
+4. Create Intro Sequence (level 0)
+5. Create Tutorial Level 1 (Movement)
+6. Create Tutorial Level 2 (Laser Fields)
+
+//mix ax_core:floor_1 2 ax_core:floor_2 2 ax_core:floor_3 1

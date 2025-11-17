@@ -1,0 +1,3 @@
+[submodule "mods/morecurves"]
+	path = mods/morecurves
+	url = https://github.com/exevirus/morecurves

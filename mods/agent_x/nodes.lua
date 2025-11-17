@@ -15,23 +15,28 @@ if ax_core.buildMode then
     }})
 end
 
-local function reg_node(name, extra_fields)
-    core.register_node("ax_core:"..name, table.merge({
+local function reg_node(name, extra_fields, register_for_morecurves)
+    local node_def = table.merge({
         description = name,
         tiles = {name..".png"},
         groups = groups,
         diggable = ax_core.buildMode,
         pointable = ax_core.buildMode,
-    }, extra_fields or {}))
+        paramtype = "none",
+    }, extra_fields or {})
+    core.register_node("ax_core:"..name, node_def)
+    if register_for_morecurves or false then
+        morecurves.add_new_node("ax_core", name, node_def)
+    end
 end
 
 -- Basic Building Blocks
-reg_node("floor_1")
-reg_node("floor_2")
-reg_node("floor_3")
-reg_node("wall_1")
-reg_node("wall_2")
-reg_node("wall_3")
+reg_node("floor_1", nil, true)
+reg_node("floor_2", nil, true)
+reg_node("floor_3", nil, true)
+reg_node("wall_1", nil, true)
+reg_node("wall_2", nil, true)
+reg_node("wall_3", nil, true)
 reg_node("light_panel", {
     paramtype = "light",
     light_source = 14,
@@ -39,6 +44,7 @@ reg_node("light_panel", {
 reg_node("cage", {
     drawtype="airlike",
     paramtype = "none",
+    light_source = 5,
     walkable = false,
     tiles = {},
 })
@@ -64,7 +70,7 @@ reg_node("field", {
     use_texture_alpha = "blend",
     drawtype = "liquid",
     post_effect_color = "#F006",
-})
+}, true)
 ax_core.lights = {}
 local function makeAirLightNode(name, brightness)
     table.insert(ax_core.lights, name)
@@ -171,6 +177,7 @@ ax_core.cage_neons = function(x,y,z,x2,y2,z2)
     for i=1,#ax_core.lights do
         table.insert(search_ids, core.get_content_id("ax_core:" .. ax_core.lights[i]))
     end
+    table.insert(search_ids, core.get_content_id("air"))
     local replace_id = core.get_content_id("ax_core:cage")
     local near_ids = {}
     for i=1,#ax_core.neons.colors do
