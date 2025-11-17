@@ -23,14 +23,15 @@ Next Steps:
 ~~14. Extend ax_core language with detect (player_agent within the bounding box, blocking)~~
 ~~15. Get Voice for Voicing the narrator~~
 ~~16. Create purple weak attractor, and red repulsor~~
-17. Create laser field node that when we crash into we go to last checkpoint (pos, index in ax_core lang)
-18. When we crash into a laser field, create an explosion set of particles (replay_agent should do this as well)
-19. Tune the heck out of physics
-20. Need particle and sound effects for attractor
-21. Need better robot model
-22. Create Main Menu "level"
-23. Create Main Menu replay_loop
-24. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
-25. Create Intro Sequence (level 0)
-26. Create Tutorial Level 1 (Movement)
-27. Create Tutorial Level 2 (Laser Fields)
+~~17. Create laser field node that when we crash into we go to last checkpoint (pos, index in ax_core lang)~~
+~~18. When we crash into a laser field, create an explosion set of particles (replay_agent should do this as well)~~
+~~19. Need particle and sound effects for attractor~~
+~~20. Tune the heck out of physics~~
+
+21. Create Main Menu "level"
+22. Create Main Menu replay_loop
+23. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
+24. Create Intro Sequence (level 0)
+25. Create Tutorial Level 1 (Movement)
+26. Create Tutorial Level 2 (Laser Fields)
+27. Need better robot model

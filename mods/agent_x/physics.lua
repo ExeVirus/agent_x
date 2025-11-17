@@ -1,9 +1,9 @@
 ax_core.players = {}
 ax_core.physics = {
-    strength = 100,
-    mass = 5,
-    air_resistance = -8,
-    gravity = -5,
+    strength = 0,
+    mass = 1,
+    air_resistance = -1.5,
+    gravity = -12,
     friction = 0.2,
 }
 
@@ -13,8 +13,10 @@ ax_core.agent_properties = {
         collide_with_objects = true,
         pointable = false,
         collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-        visual = "sprite",
-        textures = {"agent_x.png"}
+        visual = "mesh",
+        mesh = "agent.obj",
+        textures = {"invisible.png"},
+        automatic_face_movement_dir = 0,
     },
 
     on_activate = function(self, staticdata)
@@ -159,7 +161,7 @@ ax_core.enable = function(name)
         local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.5,0)), "ax_core:agent")
         if entity then
             entity:get_luaentity().player_name = name
-            player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=0, z=0})
+            player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=90, z=0})
         end
     end
 end
@@ -213,9 +215,9 @@ end
 
 ax_core.set_target = function(name, pos, target_name)
     local strength_values = {
-        attractor = 100,
-        weak_attractor = 50,
-        repulsor = -80,
+        attractor = 40,
+        weak_attractor = 20,
+        repulsor = -20,
     }
     local strength = strength_values[target_name]
 

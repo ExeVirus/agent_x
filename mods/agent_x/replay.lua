@@ -1,7 +1,9 @@
 ax_core.replays = {}
 
-ax_core.agent_properties.initial_properties.collide_with_objects = false
-core.register_entity("ax_core:agent_replay", ax_core.agent_properties)
+ax_core.replay_properties = table.copy(ax_core.agent_properties)
+ax_core.replay_properties.initial_properties.collide_with_objects = false
+ax_core.replay_properties.initial_properties.textures = {"agent.png"}
+core.register_entity("ax_core:agent_replay", ax_core.replay_properties)
 
 ax_core.start_replay = function(name, params)
     if string.match(params, "^%w+$") == nil then

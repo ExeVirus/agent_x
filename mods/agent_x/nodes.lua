@@ -39,6 +39,7 @@ reg_node("light_panel", {
 reg_node("cage", {
     drawtype="airlike",
     paramtype = "none",
+    walkable = false,
     tiles = {},
 })
 reg_node("target_attractor", {
@@ -92,6 +93,7 @@ local function make_neon(color)
         drawtype = "nodebox",
         light_source = 14,
         paramtype2 = "facedir",
+        collision_box = nil,
     }
     reg_node("strip_" .. color, table.merge(defaults, {
         node_box = {

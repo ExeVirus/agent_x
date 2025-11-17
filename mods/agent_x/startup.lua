@@ -16,11 +16,13 @@ core.register_on_joinplayer(function(player)
     player:set_moon({visible=false})
     player:set_sun({visible=false})
     player:set_properties({
-        textures = {"invisible.png"},
-        visual = "sprite",
-        visual_size = {x = 0.1, y = 0.1},
+        textures = {"agent.png"},
+        visual = "mesh",
+        mesh = "agent.obj",
+        visual_size = {x = 1, y = 1},
         collisionbox = {-0.24, 0.0, -0.26, 0.24, 0.25, 0.26},
         stepheight = 1,
-        eye_height = 1,
+        eye_height = 0,
+        automatic_face_movement_dir = 0,
     })
 end)
