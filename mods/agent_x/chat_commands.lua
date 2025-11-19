@@ -138,7 +138,7 @@ core.register_chatcommand("script",
     description = "Agent X Script API, groups of {} are executed in order until completion",
     privs = {},
     func = function(name, params)
-        ax_core.lang.script(core.get_player_by_name(name), params, "one_shot")
+        ax_core.lang.chatscript(core.get_player_by_name(name), params, "one_shot")
     end
 })
 
@@ -148,7 +148,7 @@ core.register_chatcommand("script_loop",
     description = "Agent X Script API, groups of {} are executed in order until completion",
     privs = {},
     func = function(name, params)
-        ax_core.lang.script(core.get_player_by_name(name), params, "loop")
+        ax_core.lang.chatscript(core.get_player_by_name(name), params, "loop")
     end
 })
 

@@ -28,12 +28,14 @@ Next Steps:
 ~~19. Need particle and sound effects for attractor~~
 ~~20. Tune the heck out of physics~~
 ~~27. Need better robot model~~
+~~1. Create Main Menu "level"~~
 
-1. Create Main Menu "level"
 2. Create Main Menu replay_loop
-3. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion
-4. Create Intro Sequence (level 0)
-5. Create Tutorial Level 1 (Movement)
-6. Create Tutorial Level 2 (Laser Fields)
+3. Create Main Menu formspec to be shown after first ax_core completes, probably should be a function to run an ax_core.lang, and you register a callback for on completion, need a function to clear all entities, and a fade transition formspec for going to black and then back to not black.
+4. Music should always fade out slow, and fade in fast.
+5. Create Intro Sequence (level 0)
+6. Create Tutorial Level 1 (Movement)
+7. Create Tutorial Level 2 (Laser Fields)
+8. Need to create a HUD timer countdown, for all non-tutorial levels
 
 //mix ax_core:floor_1 2 ax_core:floor_2 2 ax_core:floor_3 1

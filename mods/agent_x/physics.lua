@@ -92,7 +92,7 @@ ax_core.agent_properties = {
         if moveresult.collides then
             for _, col in ipairs(moveresult.collisions) do
                 if col.type == "node" and core.get_node(col.node_pos).name == "ax_core:field" then
-                    core.sound_play("lava",{}, true)
+                    core.sound_play("lava",{gain=ax_core.volume.effects/100}, true)
                     ax_core.lava_particles(current_pos)
                     if self.replay then
                         self.object:remove()
@@ -124,7 +124,7 @@ ax_core.agent_properties = {
             velocity = vector.add(velocity, vector.multiply(vector.subtract(vector.multiply(velocity, vector.new(0,1,0)),velocity),(dtime / physics.friction)))
         end
         -- Stop moving when close to prevent oscilation
-        if vector.length(velocity) < 1 and distance < 4 then
+        if vector.length(velocity) < 1 and distance < 2 then
             velocity = vector.zero()
         end
 
@@ -235,9 +235,9 @@ ax_core.set_target = function(name, pos, target_name)
     end
     if (pos ~= nil and not ax_core.players[name].target) or 
        (ax_core.players[name].target and pos and not vector.equals(ax_core.players[name].target,pos)) then
-        core.sound_play("target",{}, true)
+        core.sound_play("target",{gain=ax_core.volume.effects/100}, true)
     elseif pos == nil and ax_core.players[name].target ~= nil then
-        core.sound_play("untarget",{}, true)
+        core.sound_play("untarget",{gain=ax_core.volume.effects/100}, true)
     end
     ax_core.players[name].target = pos
     ax_core.players[name].strength = strength

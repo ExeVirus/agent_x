@@ -23,7 +23,8 @@
 -- {circle,time,center_x,center_z,arc_speed,y_speed}
 -- {circle_look,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz}
 -- {circle_look_line,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed}
--- {sound,time,sound,gain,loop,play_time}
+-- {sound,time,sound,loop,play_time}
+-- {voice,time,sound,loop,play_time}
 -- {replay,time,replay_name,loop}
 -- {attach,time}
 -- {detach,time}
@@ -33,7 +34,7 @@
 -- {detect,time,x1,y1,z1,x2,y2,z2}
 
 -- Example Script:
--- /script {sound`0`"welcome"``1.0`0`5} {text`0`"Welcome, Agent X, to your first mission"`0.25`1.0} {pos`0`-33`7.6`13.9} {circle_look`2.75`-18.5`4.3`-10`-0.4`-18.4`4.3`13.9}
+-- /script {sound,0,"welcome",,1.0,0,5} {text,0,"Welcome, Agent X, to your first mission",0.25,1.0} {pos,0,-33,7.6,13.9} {circle_look,2.75,-18.5,4.3,-10,-0.4,-18.4,4.3,13.9}
 
 ax_core.lang = {}
 function ax_core.get_eye_offset(player)
@@ -64,6 +65,7 @@ ax_core.lang.command_num_args = {
     circle_look = 8,
     circle_look_line = 9,
     sound = 5,
+    voice = 5,
     replay = 3,
     attach = 1,
     detach = 1,
@@ -152,12 +154,23 @@ ax_core.lang.commands = {
             ax_core.lang.commands.look(player,new_pos,dtime,target_look_location.x,target_look_location.y,target_look_location.z)
         end
     end,
-    sound = function(player,orig_pos,dtime,sound,gain,loop,play_time)
+    sound = function(player,orig_pos,dtime,sound,loop,play_time)
         table.insert(ax_core.playing_sounds,{
             play_time = play_time,
             played_for_time = 0,
             handle = core.sound_play(sound,{
-                gain = gain,
+                gain = ax_core.volume.effects/100,
+                loop = loop ~= 0,
+                to_player = player:get_player_name(),
+            })
+        })
+    end,
+    voice = function(player,orig_pos,dtime,sound,loop,play_time)
+        table.insert(ax_core.playing_sounds,{
+            play_time = play_time,
+            played_for_time = 0,
+            handle = core.sound_play(sound,{
+                gain = ax_core.volume.voice/100,
                 loop = loop ~= 0,
                 to_player = player:get_player_name(),
             })
@@ -236,7 +249,7 @@ function ax_core.parse_params(params)
 
     for command_group in params:gmatch("{([^}]+)}") do
         local parts = {}
-        for part in command_group:gmatch("([^`]+)") do
+        for part in command_group:gmatch('"[^"]*"|[^,]+') do
             table.insert(parts, part)
         end
         -- A valid group must have at least a command and a time
@@ -285,7 +298,7 @@ function ax_core.parse_params(params)
     return commands
 end
 
-function ax_core.lang.script(player, params, mode)
+function ax_core.lang.chatscript(player, params, mode, callback)
     if player ~= nil and type(params) == "string" then
         local commands, error = ax_core.parse_params(params)
         local player_name = player:get_player_name()
@@ -299,7 +312,41 @@ function ax_core.lang.script(player, params, mode)
                 mode = mode,
                 index = 1,
                 time_remaining = commands[1].args[1],
-                last_look = vector.zero()
+                last_look = vector.zero(),
+                callback = callback
+            }
+        end
+    end
+end
+
+function ax_core.lang.script(player,mode,command_groups,callback)
+    if player ~= nil and type(command_groups) == "table" then
+        local parsed_commands = {}
+        for _,command_group in ipairs(command_groups) do
+            local command_name = command_group[1]
+            if command_name and ax_core.lang.commands[command_name] then
+                local command_info = {
+                    command = command_name,
+                    args = {}
+                }
+                table.move(command_group, 2, #command_group, 1, command_info.args)
+                local num_args = ax_core.lang.command_num_args[command_info.command]
+                if #command_info.args == num_args then
+                    table.insert(parsed_commands, command_info)
+                else
+                    error("Invalid number of args for command "..command_info.command
+                        ..", got "..#command_info.args..", expected "..num_args.." , command group: " .. dump(command_group))
+                end
+            end
+        end
+        if parsed_commands ~= nil and #parsed_commands > 0 then
+            ax_core.lang.players[player:get_player_name()].script = {
+                commands = parsed_commands,
+                mode = mode,
+                index = 1,
+                time_remaining = parsed_commands[1].args[1],
+                last_look = vector.zero(),
+                callback = callback
             }
         end
     end
@@ -350,6 +397,9 @@ core.register_globalstep(function(dtime)
                         if script.index > #script.commands then
                             if script.mode == "one_shot" then
                                 script.commands = nil
+                                if script.callback then
+                                    script.callback()
+                                end
                                 break
                             else
                                 script.index = 1
