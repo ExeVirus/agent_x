@@ -53,20 +53,22 @@ ax_core.startup = function(player)
     local script = {
         {"pos" ,0,0.5,4,0},
         {"look",0.5,0.5,4,5},
-        {"line",2,0.5,4,50,5}, -- 10
-        {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 20
-        {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 30
-        {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 40
-        {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,48,5}, -- 48
-        {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 10
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 20
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 30
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 40
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,48,5}, -- 48
+        -- {"replay",0,"mainmenu",true},
     }
-    ax_core.lang.script(player,"one_shot", script, function()
-        core.show_formspec(player_name, "main_menu", ax_core.main_menu)
-    end)
+    if not ax_core.buildMode then
+        ax_core.lang.script(player,"one_shot", script, function()
+            core.show_formspec(player_name, "main_menu", ax_core.main_menu)
+        end)
+    end
 end
 
 ax_core.volume = core.deserialize(ax_core.mod_storage:get_string("volume")) or 
@@ -133,8 +135,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         ax_core.mod_storage:set_string("volume", core.serialize(ax_core.volume))
         if fields.start then
             core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
-            core.after(1.275, function()
-                core.show_formspec(player:get_player_name(), "blackout", ax_core.blackout)
+            core.after(0.9, function()
+                ax_core.stop_music()
+                ax_core.levels[1](player)
             end)
         end
         if fields.exit then

@@ -64,8 +64,8 @@ ax_core.lang.command_num_args = {
     circle = 5,
     circle_look = 8,
     circle_look_line = 9,
-    sound = 5,
-    voice = 5,
+    sound = 4,
+    voice = 4,
     replay = 3,
     attach = 1,
     detach = 1,
@@ -245,11 +245,11 @@ function ax_core.parse_params(params)
     local commands = {}
     local command_pattern = "^%s*[%w_]+%s*$"
     local value_pattern = "^%s*[+-]?%d*%.?%d+%s*$"
-    local string_pattern = "^%s*\"(.-)\"%s*$"
+    local string_pattern = "^%s*(.-)%s*$"
 
     for command_group in params:gmatch("{([^}]+)}") do
         local parts = {}
-        for part in command_group:gmatch('"[^"]*"|[^,]+') do
+        for part in command_group:gmatch('[^,]+') do
             table.insert(parts, part)
         end
         -- A valid group must have at least a command and a time
@@ -291,7 +291,7 @@ function ax_core.parse_params(params)
                 return nil, "Invalid command name in group: " .. command_group
             end
         else
-            return nil, "Group has insufficient arguments: " .. command_group
+            return nil, "Group: '" .. command_group .. "' has only " .. #parts .. " arguments. Need at least 2."
         end
     end
 
