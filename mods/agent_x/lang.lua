@@ -21,8 +21,8 @@
 -- {line_look,time,x,y,z,speed,lookx,looky,lookz}
 -- {line_look_line,time,x,y,z,speed,lookx,looky,lookz,look_speed}
 -- {circle,time,center_x,center_z,arc_speed,y_speed}
--- {circle_look,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz}
--- {circle_look_line,time,center_x,center_z,arc_speed,y_speedlookx,looky,lookz,look_speed}
+-- {circle_look,time,center_x,center_z,arc_speed,y_speed,lookx,looky,lookz}
+-- {circle_look_line,time,center_x,center_z,arc_speed,y_speed,lookx,looky,lookz,look_speed}
 -- {sound,time,sound,loop,play_time}
 -- {voice,time,sound,loop,play_time}
 -- {replay,time,replay_name,loop}
@@ -177,7 +177,7 @@ ax_core.lang.commands = {
         })
     end,
     replay = function(player,orig_pos,dtime,replay_name,loop)
-        ax_core.play_replay(replay_name, loop ~= 0)
+        ax_core.play_replay(replay_name,loop ~= 0)
     end,
     attach = function(player,orig_pos,dtime)
         ax_core.enable(player:get_player_name())

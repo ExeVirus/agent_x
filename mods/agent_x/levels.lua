@@ -31,6 +31,7 @@ table.insert(ax_core.levels, function(player)
         {"voice",0,"0_5_Our_Targets_go_to_great",0,9.0},
         {"line",9.0,26,-6,70,1},
         {"look",0,19,-7,70},
+        {"replay",0,"intro2",0},
         {"wait",0.8},
         {"text",0,"Before you are given your first mission, we must calibrate your control and reaction functionality.",0.28,1.5},
         {"voice",0,"0_6_Before_you_are_given_your",0,5.0},
@@ -61,24 +62,27 @@ end)
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
     ax_core.play_music(player_name,"mainmenu", true)
-    -- local script = {
-    --     {"pos" ,0,0.5,4,0},
-    --     {"look",0.5,0.5,4,5},
-    --     {"line",2,0.5,4,50,5}, -- 10
-    --     {"replay",0,"mainmenu",true},
-    --     {"line",2,0.5,4,50,5}, -- 20
-    --     {"replay",0,"mainmenu",true},
-    --     {"line",2,0.5,4,50,5}, -- 30
-    --     {"replay",0,"mainmenu",true},
-    --     {"line",2,0.5,4,50,5}, -- 40
-    --     {"replay",0,"mainmenu",true},
-    --     {"line",2,0.5,4,48,5}, -- 48
-    --     {"replay",0,"mainmenu",true},
-    -- }
-    -- core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
-    -- core.after(1.275, function()
-    --     ax_core.lang.script(player,"one_shot",script, function()
-    --         ax_core.levels[2](player)
-    --     end)
-    -- end)
+    ax_core.lang.script(player,"one_shot",{
+        {"pos" ,0.0,19,-9,82},
+        {"look",0.0,19,-9,83},
+    }, nil)
+    local script = {
+        -- {"line",2,0.5,4,50,5}, -- 10
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 20
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 30
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,50,5}, -- 40
+        -- {"replay",0,"mainmenu",true},
+        -- {"line",2,0.5,4,48,5}, -- 48
+        -- {"replay",0,"mainmenu",true},
+    }
+    core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
+    core.after(1.275, function()
+        core.close_formspec(player_name, "")
+        -- ax_core.lang.script(player,"one_shot",script, function()
+             -- ax_core.levels[3](player)
+        -- end)
+    end)
 end)
