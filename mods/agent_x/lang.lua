@@ -31,7 +31,9 @@
 -- {title,time,text,color(#RRGGBB),fadein,steady,fadeout}
 -- {text,time,text,word_time,extra_time}
 -- {wait,time}
--- {detect,time,x1,y1,z1,x2,y2,z2}
+-- {detect,time,x1,y1,z1,x2,y2,z2,script_index}
+-- {objective,time,x1,y1,z1,x2,y2,z2}
+-- {chat,time,text}
 
 -- Example Script:
 -- /script {sound,0,"welcome",,1.0,0,5} {text,0,"Welcome, Agent X, to your first mission",0.25,1.0} {pos,0,-33,7.6,13.9} {circle_look,2.75,-18.5,4.3,-10,-0.4,-18.4,4.3,13.9}
@@ -72,7 +74,9 @@ ax_core.lang.command_num_args = {
     title = 6,
     text = 4,
     wait = 1,
-    detect = 7,
+    detect = 8,
+    objective = 7,
+    chat = 2,
 }
 
 ax_core.lang.commands = {
@@ -81,11 +85,15 @@ ax_core.lang.commands = {
     end,
     look = function(player,orig_pos,dtime,x,y,z)
         local look_location = vector.new(x,y,z)
-        local look_dir = vector.direction(vector.add(orig_pos, ax_core.get_eye_offset(player)), look_location)
-        local pitch = -math.asin(look_dir.y)
-        local yaw = math.atan2(-look_dir.x, look_dir.z)
-        player:set_look_horizontal(yaw)
-        player:set_look_vertical(pitch)
+        if vector.equals(look_location, vector.zero()) then
+            look_location = vector.add(orig_pos, player:get_look_dir())
+        else
+            local look_dir = vector.direction(vector.add(orig_pos, ax_core.get_eye_offset(player)), look_location)
+            local pitch = -math.asin(look_dir.y)
+            local yaw = math.atan2(-look_dir.x, look_dir.z)
+            player:set_look_horizontal(yaw)
+            player:set_look_vertical(pitch)
+        end
         ax_core.lang.players[player:get_player_name()].last_look = look_location
     end,
     fov = function(player,orig_pos,dtime,fov)
@@ -155,26 +163,32 @@ ax_core.lang.commands = {
         end
     end,
     sound = function(player,orig_pos,dtime,sound,loop,play_time)
-        table.insert(ax_core.playing_sounds,{
+        local player_name = player:get_player_name()
+        table.insert(ax_core.lang.players[player_name].playing_sounds,{
             play_time = play_time,
             played_for_time = 0,
             handle = core.sound_play(sound,{
                 gain = ax_core.volume.effects/100,
                 loop = loop ~= 0,
-                to_player = player:get_player_name(),
+                to_player = player_name,
             })
         })
     end,
     voice = function(player,orig_pos,dtime,sound,loop,play_time)
-        table.insert(ax_core.playing_sounds,{
+        local player_name = player:get_player_name()
+        local playing_voice = ax_core.lang.players[player_name].playing_voice
+        if playing_voice then
+            core.sound_stop(playing_voice.handle)
+        end
+        ax_core.lang.players[player_name].playing_voice = {
             play_time = play_time,
             played_for_time = 0,
             handle = core.sound_play(sound,{
                 gain = ax_core.volume.voice/100,
                 loop = loop ~= 0,
-                to_player = player:get_player_name(),
+                to_player = player_name,
             })
-        })
+        }
     end,
     replay = function(player,orig_pos,dtime,replay_name,loop)
         ax_core.play_replay(replay_name,loop ~= 0)
@@ -213,7 +227,22 @@ ax_core.lang.commands = {
     end,
     wait = function(player,orig_pos,dtime)
     end,
-    detect = function(player,orig_pos,dtime,x1,y1,z1,x2,y2,z2)
+    detect = function(player,orig_pos,dtime,x1,y1,z1,x2,y2,z2,script_index)
+        ax_core.lang.players[player:get_player_name()].detect = {
+            min = vector.new(
+                math.min(x1, x2),
+                math.min(y1, y2),
+                math.min(z1, z2)
+            ),
+            max = vector.new(
+                math.max(x1, x2),
+                math.max(y1, y2),
+                math.max(z1, z2)
+            ),
+            new_index = script_index
+        }
+    end,
+    objective = function(player,orig_pos,dtime,x1,y1,z1,x2,y2,z2)
         local min = vector.new(
             math.min(x1, x2),
             math.min(y1, y2),
@@ -224,22 +253,33 @@ ax_core.lang.commands = {
             math.max(y1, y2),
             math.max(z1, z2)
         )
-        if vector.in_area(player:get_pos(), min, max) then
-            local script = ax_core.lang.players[player:get_player_name()].script
-            script.index = script.index + 1
-            if script.index > #script.commands then
-                if script.mode == "one_shot" then
-                    script.commands = nil
-                else
-                    script.index = 1
-                end
-            end
-            script.time_remaining = script.commands[script.index].args[1]
+        local player_name = player:get_player_name()
+        if ax_core.lang.players[player_name].objective then
+            core.delete_particlespawner(ax_core.lang.players[player_name].objective, player_name)
         end
-    end
+        if vector.distance(min, max) > 0 then
+            ax_core.lang.players[player_name].objective = core.add_particlespawner({
+                amount = 10,
+                time = 0,
+                minsize = 0.2,
+                maxsize = 0.8,
+                texture = "objective.png",
+                playername = player_name,
+                glow = 14,
+                minpos = min,
+                maxpos = max,
+                minvel = vector.new(0,0.8,0),
+                maxvel = vector.new(0,0.6,0),
+                minexptime = 1,
+                maxexptime = 1.8,
+            })
+        end
+    end,
+    chat = function(player,orig_pos,dtime,text)
+        core.chat_send_player(player:get_player_name(),text)
+    end,
 }
 ax_core.lang.players = {}
-ax_core.playing_sounds = {}
 
 function ax_core.parse_params(params)
     local commands = {}
@@ -348,6 +388,7 @@ function ax_core.lang.script(player,mode,command_groups,callback)
                 last_look = vector.zero(),
                 callback = callback
             }
+            ax_core.lang.players[player:get_player_name()].playing_sounds = {}
         end
     end
 end
@@ -381,6 +422,22 @@ core.register_globalstep(function(dtime)
             local script = player_data.script
             local remaining_dtime = dtime
             local player = core.get_player_by_name(player_name)
+            -- handle detect first
+            if player_data.detect then
+                if vector.in_area(player:get_pos(), player_data.detect.min, player_data.detect.max) then
+                    script.index = ax_core.lang.players[player_name].detect.new_index
+                    if script.index > #script.commands then
+                        if script.mode == "one_shot" then
+                            script.commands = nil
+                        else
+                            script.index = 1
+                        end
+                    end
+                    script.time_remaining = script.commands[script.index].args[1]
+                    player_data.detect = nil
+                end
+            end
+            -- Now normal processing
             while remaining_dtime > 0 do
                 local current_command = script.commands[script.index]
                 local command_name = current_command.command
@@ -398,6 +455,11 @@ core.register_globalstep(function(dtime)
                             if script.mode == "one_shot" then
                                 script.commands = nil
                                 if script.callback then
+                                    player_data.detect = nil
+                                    if player_data.objective then
+                                        core.delete_particlespawner(player_data.objective, player_name)
+                                    end
+                                    player_data.playing_sounds = {}
                                     script.callback()
                                 end
                                 break
@@ -445,14 +507,23 @@ core.register_globalstep(function(dtime)
                 table.concat(text.text_array," ", 1, math.min(#text.text_array,math.floor(text.current_time / text.word_time)))
             ))
         end
-        ::continue_loop::
-    end
-    for _, playing_sound in pairs(ax_core.playing_sounds) do
-        if playing_sound.play_time > 0 then
-            playing_sound.played_for_time = playing_sound.played_for_time + dtime
-            if playing_sound.played_for_time > playing_sound.play_time then
-                core.sound_stop(playing_sound.handle)
+        for _, playing_sound in pairs(player_data.playing_sounds) do
+            if playing_sound.play_time > 0 then
+                playing_sound.played_for_time = playing_sound.played_for_time + dtime
+                if playing_sound.played_for_time > playing_sound.play_time then
+                    core.sound_stop(playing_sound.handle)
+                end
             end
         end
+        if player_data.playing_voice then
+            if player_data.playing_voice.play_time > 0 then
+                player_data.playing_voice.played_for_time = player_data.playing_voice.played_for_time + dtime
+                if player_data.playing_voice.played_for_time > player_data.playing_voice.play_time then
+                    core.sound_stop(player_data.playing_voice.handle)
+                    player_data.playing_voice = nil
+                end
+            end
+        end
+        ::continue_loop::
     end
 end)

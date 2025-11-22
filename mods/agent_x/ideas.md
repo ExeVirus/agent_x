@@ -17,5 +17,22 @@ Are you ready?
 [Nods up and down twice quickly]
 
 # Tutorial 1
-
+First, let's begin with the basics: mag-grav movement and objectives.
+[Look]
+Notice the yellow glowing orbs on that platform and the attractor above it.
+[Pause]
+Click or tap the attractor above that platform to grav there.
+[objective]
+Now that you are here, click again anywhere there isn't an attractor to stop attracting.
+[Pause]
+Notice the new objective on that platform far in the corner, and the blue attractor on the ceiling
+[Look]
+You will need to first grav to the attractor and time your release to land on the objective platform.
+If you miss, use the floor attractors to start at the beginning.
+[objective]
+Great job! Now you need to grav to the far attractors [look], and along the way you'll quickly need to grav to the attractors embedded in the wall on the left, to make it to the last objective platform.
+[Look]
+You can make out the objective orbs on that platform farther to the left
+[objective]
+Alright, I think you have mastered the basics, let's move on to Laser Fields....
 # Tutorial 2

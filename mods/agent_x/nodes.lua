@@ -31,13 +31,14 @@ local function reg_node(name, extra_fields, register_for_morecurves)
 end
 
 -- Basic Building Blocks
-reg_node("floor_1", nil, true)
-reg_node("floor_2", nil, true)
-reg_node("floor_3", nil, true)
-reg_node("wall_1", nil, true)
-reg_node("wall_2", nil, true)
-reg_node("wall_3", nil, true)
+reg_node("floor_1", {pointable = true}, true)
+reg_node("floor_2", {pointable = true}, true)
+reg_node("floor_3", {pointable = true}, true)
+reg_node("wall_1", {pointable = true}, true)
+reg_node("wall_2", {pointable = true}, true)
+reg_node("wall_3", {pointable = true}, true)
 reg_node("light_panel", {
+    {pointable = true},
     paramtype = "light",
     light_source = 14,
 })
@@ -70,6 +71,7 @@ reg_node("field", {
     use_texture_alpha = "blend",
     drawtype = "liquid",
     post_effect_color = "#F006",
+    {pointable = true},
 }, true)
 ax_core.lights = {}
 local function makeAirLightNode(name, brightness)

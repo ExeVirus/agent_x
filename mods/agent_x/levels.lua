@@ -53,7 +53,10 @@ table.insert(ax_core.levels, function(player)
     core.after(0.9, function()
         core.close_formspec(player_name, "")
         ax_core.lang.script(player,"one_shot",script, function()
-            ax_core.levels[2](player)
+            core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
+            core.after(0.9, function()
+                ax_core.levels[2](player)
+            end)
         end)
     end)
 end)
@@ -67,22 +70,54 @@ table.insert(ax_core.levels, function(player)
         {"look",0.0,19,-9,83},
     }, nil)
     local script = {
-        -- {"line",2,0.5,4,50,5}, -- 10
-        -- {"replay",0,"mainmenu",true},
-        -- {"line",2,0.5,4,50,5}, -- 20
-        -- {"replay",0,"mainmenu",true},
-        -- {"line",2,0.5,4,50,5}, -- 30
-        -- {"replay",0,"mainmenu",true},
-        -- {"line",2,0.5,4,50,5}, -- 40
-        -- {"replay",0,"mainmenu",true},
-        -- {"line",2,0.5,4,48,5}, -- 48
-        -- {"replay",0,"mainmenu",true},
+        {"attach",0},
+        {"objective",0,25.5,-5.0, 89,22.5,-4, 91.0},
+        {"detect",0   ,25.5,-5.0, 88,22.5,-2, 91.0,12},
+        {"chat",0,"First, let's begin with the basics: mag-grav movement and objectives."},
+        {"wait",5.0},
+        {"chat",0,"Notice the yellow glowing orbs on that platform and the attractor above it."},
+        {"look",0,0,0,0},
+        {"line_look_line",3,0,0,0,0,25,-3,90,3},
+        {"wait",2.0},
+        {"chat",0,"Click or tap the attractor above that platform to grav there."},
+        {"wait",900000000},
+        {"objective",0,12.5,-0.5,104,10.5, 0,106.5},
+        {"detect",0,   12.5,-1.5,104.5,10.5, 0,106.5,25},
+        {"chat",0,"Now that you are here, click again anywhere there isn't an attractor to stop attracting."},
+        {"wait",6.0},
+        {"chat",0,"Notice the new objective on that platform far in the corner, and the blue attractor on the ceiling."},
+        {"look",0,0,0,0},
+        {"line_look_line",3,0,0,0,0,16.5,0,100.5,5},
+        {"wait",3.5},
+        {"chat",0,"You will need to first grav to the attractor and time your release to land on the objective platform."},
+        {"wait",6.5}, --20
+        {"chat",0,"If you miss, use the floor attractors to start at the beginning."},
+        {"wait",5.0},
+        {"wait",900000000},
+        {"objective",0,14.5,-2.5,87.5,17.5, 0,90.5},
+        {"detect",0   ,16.0,-2.5,87.5,17.5, 0,90.5,37},
+        {"chat",0,"Great job! Now you need to grav to the far attractors,"},
+        {"wait",2.0},
+        {"look",0,0,0,0},
+        {"line_look_line",2,0,0,0,0,11.5,1.6,89,3},
+        {"chat",0,"and along the way you'll quickly need to grav to the attractors embedded in the wall on the left,"},
+        {"wait",6.5},
+        {"chat",0,"to make it to the last objective platform."},
+        {"wait",3.5}, --30
+        {"chat",0,"You can make out the objective orbs on that platform farther to the left"},
+        {"wait",900000000},
+        {"detach",0},
+        {"wait",1.0},
+        {"text",0,"Alright, I think you have mastered the basics, let's move on to Laser Fields....",0.25,0.25},
     }
     core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
     core.after(1.275, function()
         core.close_formspec(player_name, "")
-        -- ax_core.lang.script(player,"one_shot",script, function()
-             -- ax_core.levels[3](player)
-        -- end)
+        ax_core.lang.script(player,"one_shot",script, function()
+            --core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
+            core.after(0.9, function()
+                --ax_core.levels[3](player)
+            end)
+        end)
     end)
 end)
