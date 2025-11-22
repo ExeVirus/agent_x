@@ -158,7 +158,7 @@ ax_core.enable = function(name)
         ax_core.players[name].enabled_pos = player:get_pos()
         ax_core.players[name].enabled_look_vertical = player:get_look_vertical()
         ax_core.players[name].enabled_look_horizontal = player:get_look_horizontal()
-        local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.5,0)), "ax_core:agent")
+        local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.1,0)), "ax_core:agent")
         if entity then
             entity:get_luaentity().player_name = name
             player:set_attach(entity, "", {x=0, y=0, z=0}, {x=0, y=90, z=0})
