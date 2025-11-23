@@ -19,6 +19,7 @@ core.register_on_joinplayer(function(player)
     player:set_stars({visible=false})
     player:set_moon({visible=false})
     player:set_sun({visible=false})
+    player:set_physics_override({gravity=0})
     player:set_properties({
         textures = {"agent.png"},
         visual = "mesh",

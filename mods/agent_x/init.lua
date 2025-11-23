@@ -11,7 +11,7 @@
 -- Everything can be modified, public API
 -----------------------------------------
 ax_core = {} -- global table for other dependent mod access
-ax_core.buildMode = true -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
+ax_core.buildMode = false -- Control ax_core globally: `true` for making/building levels and testing the game, `false` for releases
 ax_core.mod_path = core.get_modpath(core.get_current_modname())
 ax_core.mod_storage = core.get_mod_storage()
 

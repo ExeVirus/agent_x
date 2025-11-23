@@ -139,21 +139,55 @@ table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
     ax_core.players[player_name].max_target_distance = 18
     ax_core.play_music(player_name,"mainmenu", true)
-    ax_core.lang.script(player,"one_shot",{
+    local script = {
+        -- {"pos" ,0.0,-11,-1,83},
+        -- {"look",0.0,-3,-1.5,85},
         {"pos" ,0.0,5,-8,86},
         {"look",0.0,4,-8,85},
-    }, nil)
-    local script = {
         {"attach",0},
+        {"objective",0,-4,-3,87,-2,0,87},
+        {"detect",   0,-4,-3,87,-2,0,87,15},
+        {"formspec",0,"fadein"},
+        {"wait",1.25},
+        {"formspec",0,""},
+        -- {"voice",0,"2_1_Sensor_tech_has_not_kept",0,5.0},
+        -- {"text",0,"Sensor tech has not kept up with the pace of stealth tech in the past several decades.",0.22,0.75},
+        -- {"wait",5.0},
+        -- {"voice",0,"2_2_As_a_result_secure_facilities",0,7.0},
+        -- {"text",0,"As a result, secure facilities have gone the oldschool route: If they can't sense you, they'll just destroy you.",0.27,1.3},
+        -- {"wait",7.0},
+        -- {"voice",0,"2_3_Your_next_objective_is_at",0,6.0},
+        -- {"text",0,"Your next objective is at the left doorway, and take note of all the laser fields between you and that location.",0.25,0.75},
+        -- {"wait",6.0},
+        -- {"voice",0,"2_4_For_now_we_are_having",0,10.0},
+        -- {"text",0,"For now, we are having you practice in simulation, but be careful in real missions. Making so many operatives is a core cost driver in our line of work.",0.27,1.5},
+        -- {"wait",10.0},
+        -- {"pos" ,0.0,5,-8,86},
+        -- {"look",0.0,4,-8,85},
+        -- {"attach",0},
+        -- {"voice",0,"2_5_That_took_fewer_attempts_than",0,6.0},
+        -- {"text",0,"That took fewer attempts than predicted - adjusting future prediction models accordingly.",0.32,1.0},
+        -- {"wait",6.0},
+        -- {"voice",0,"2_6_The_real_world_is_messy",0,9.0},
+        -- {"text",0,"The real world is messy, and our mag-grav technology sometimes can only find so many impurities in top of the line facility structures.",0.3,1.0},
+        -- {"wait",9.0},
+        -- {"voice",0,"2_7_We_have_noted_these_more",0,9.0},
+        -- {"text",0,"We have noted these more pure targets in purple on your sensor feed. Your attraction to these targets will be less than the normal blue ones.",0.3,1.0},
+        -- {"wait",9.0},
+        -- {"voice",0,"2_8_Leverage_such_differences_as_you",0,6.0},
+        -- {"text",0,"Leverage such differences as you see fit, they can often be more helpful than not.",0.29,1.0},
+        -- {"wait",6.0},
+        -- {"voice",0,"2_9_Your_next_objective_is_through",0,4.0},
+        -- {"text",0,"Your next objective is through this maze of lasers, good luck.",0.24,0.75},
+        -- {"wait",4.0},
+        -- {"voice",0,"2_10_Well_Done_For_the_final",0,9.0},
+        -- {"text",0,"Well Done! For the final part of this test, we want to make clear that our mag-grav technology has a limit: it can only shoot medium distances",0.3,1.2},
+        -- {"wait",9.0},
+        -- {"voice",0,"2_11_Further_many_missions_we_wont",0,9.0},
+        -- {"text",0,"Further, many missions we won't have full intel on the target facility. Be fast, careful, and seek out the hidden safe room in the rest of this facililty.",0.3,1.2},
+        -- {"wait",9.0},
     }
-    core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
-    core.after(1.275, function()
-        core.close_formspec(player_name, "")
-        -- ax_core.lang.script(player,"one_shot",script, function()
-        --     --core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
-        --     core.after(0.9, function()
-        --         --ax_core.levels[3](player)
-        --     end)
-        -- end)
+    ax_core.lang.script(player,"one_shot",script, function()
+        --ax_core.levels[3](player)
     end)
 end)

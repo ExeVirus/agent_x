@@ -34,6 +34,7 @@
 -- {detect,time,x1,y1,z1,x2,y2,z2,script_index}
 -- {objective,time,x1,y1,z1,x2,y2,z2}
 -- {chat,time,text}
+-- {formspec,time,name}
 
 -- Example Script:
 -- /script {sound,0,"welcome",,1.0,0,5} {text,0,"Welcome, Agent X, to your first mission",0.25,1.0} {pos,0,-33,7.6,13.9} {circle_look,2.75,-18.5,4.3,-10,-0.4,-18.4,4.3,13.9}
@@ -77,6 +78,7 @@ ax_core.lang.command_num_args = {
     detect = 8,
     objective = 7,
     chat = 2,
+    formspec = 2,
 }
 
 ax_core.lang.commands = {
@@ -277,6 +279,15 @@ ax_core.lang.commands = {
     end,
     chat = function(player,orig_pos,dtime,text)
         core.chat_send_player(player:get_player_name(),text)
+    end,
+    formspec = function(player,orig_pos,dtime,name)
+        if name == "fadein" then
+            core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
+        elseif name == "fadeout" then
+            core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
+        else 
+            core.close_formspec(player:get_player_name(),"")
+        end
     end,
 }
 ax_core.lang.players = {}
