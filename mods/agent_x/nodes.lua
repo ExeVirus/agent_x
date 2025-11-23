@@ -53,17 +53,17 @@ reg_node("target_attractor", {
     tiles = {"glow_red.png^[colorize:blue:255"},
     light_source = 9,
     pointable = true,
-})
+}, true)
 reg_node("target_weak_attractor", {
     tiles = {"glow_red.png^[colorize:blue:120"},
     light_source = 9,
     pointable = true,
-})
+}, true)
 reg_node("target_repulsor", {
     tiles = {"glow_red.png"},
     light_source = 9,
     pointable = true,
-})
+}, true)
 local laser_field_tile = { name="laser_field.png", animation={ type = "vertical_frames", aspect_w = 32, aspect_h = 32,length = 1.0, } }
 reg_node("field", {
     tiles = { laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile, laser_field_tile },

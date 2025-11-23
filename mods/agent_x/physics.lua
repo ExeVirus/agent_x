@@ -202,12 +202,12 @@ function ax_core.click(itemstack, user, pointed_thing)
         if player_name then
             if pointed_thing and pointed_thing.type == "node" then
                 local target_position = pointed_thing.under
-                local target_start_string = "ax_core:target_"
+                local target_pattern = "^ax_core:[%w_]*target_([%w]*)"
                 local node_name = core.get_node(target_position).name
-                local is_target = node_name:sub(1, #target_start_string) == target_start_string
-                if is_target and vector.distance(target_position, user:get_pos()) <= ax_core.players[player_name].max_target_distance then
+                local target_node = node_name:match(target_pattern)
+                if target_node and vector.distance(target_position, user:get_pos()) <= ax_core.players[player_name].max_target_distance then
                     core.chat_send_all(vector.distance(target_position, user:get_pos()))
-                    ax_core.set_target(player_name, target_position, node_name:sub(#target_start_string + 1))
+                    ax_core.set_target(player_name, target_position, target_node)
                     return nil
                 end
             end
