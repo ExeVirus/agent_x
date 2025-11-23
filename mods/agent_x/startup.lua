@@ -9,7 +9,9 @@ end
 
 core.register_on_joinplayer(function(player)
     local player_name = player:get_player_name()
-    ax_core.players[player_name] = {}
+    ax_core.players[player_name] = {
+        max_target_distance = ax_core.default_max_target_distance
+    }
     ax_core.lang.players[player_name] = {
         playing_sounds = {}
     }
@@ -139,7 +141,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
             core.after(0.9, function()
                 ax_core.stop_music()
-                ax_core.levels[2](player)
+                ax_core.levels[3](player)
             end)
         end
         if fields.exit then

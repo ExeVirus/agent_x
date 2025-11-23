@@ -3,6 +3,7 @@ ax_core.levels = {}
 -- Level 1: Intro
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
+    ax_core.players[player_name].max_target_distance = ax_core.default_max_target_distance
     -- set player up in the right starting spot and look
     ax_core.lang.script(player,"one_shot",{
         {"pos" ,0,19,-8.7,56},
@@ -64,6 +65,7 @@ end)
 -- Level 2: Tutorial 1, movement
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
+    ax_core.players[player_name].max_target_distance = ax_core.default_max_target_distance
     ax_core.play_music(player_name,"mainmenu", true)
     ax_core.lang.script(player,"one_shot",{
         {"pos" ,0.0,19,-9,82},
@@ -100,8 +102,8 @@ table.insert(ax_core.levels, function(player)
         {"voice",0,"1_07_If_you_miss_use_the",0,4.0},
         {"chat",0,"If you miss, use the floor attractors to start at the beginning."},
         {"wait",900000000},
-        {"objective",0,14.5,-2.5,87.5,17.5, 0,90.5},
-        {"detect",0   ,16.0,-2.5,87.5,17.5, 0,90.5,45},
+        {"objective",0,14.5,-3.5,87.5,17.5, -1,90.5},
+        {"detect",0   ,16.0,-3.5,87.5,17.5, -1,90.5,45},
         {"voice",0,"1_08_Great_job_Now_you_need",0,5.0},
         {"chat",0,"Great job! Now you need to propel to the far attractors on the opposite wall."},
         {"wait",2.0},
@@ -118,15 +120,40 @@ table.insert(ax_core.levels, function(player)
         {"wait",1.0},
         {"voice",0,"1_10_Alright_I_think_you_have",0,8.0},
         {"text",0,"Alright, I think you have mastered the basics, let's move on to Laser Fields...",0.25,0.25},
+        {"wait",8.0}
     }
     core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
     core.after(1.275, function()
         core.close_formspec(player_name, "")
         ax_core.lang.script(player,"one_shot",script, function()
-            --core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
+            core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
             core.after(0.9, function()
-                --ax_core.levels[3](player)
+                ax_core.levels[3](player)
             end)
         end)
+    end)
+end)
+
+-- Level 3: Tutorial 2, laser fields, weak attractors, max distance
+table.insert(ax_core.levels, function(player)
+    local player_name = player:get_player_name()
+    ax_core.players[player_name].max_target_distance = 18
+    ax_core.play_music(player_name,"mainmenu", true)
+    ax_core.lang.script(player,"one_shot",{
+        {"pos" ,0.0,5,-8,86},
+        {"look",0.0,4,-8,85},
+    }, nil)
+    local script = {
+        {"attach",0},
+    }
+    core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
+    core.after(1.275, function()
+        core.close_formspec(player_name, "")
+        -- ax_core.lang.script(player,"one_shot",script, function()
+        --     --core.show_formspec(player:get_player_name(), "fadeout", ax_core.fadeout)
+        --     core.after(0.9, function()
+        --         --ax_core.levels[3](player)
+        --     end)
+        -- end)
     end)
 end)

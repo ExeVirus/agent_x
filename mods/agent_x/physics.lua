@@ -2,9 +2,9 @@ ax_core.players = {}
 ax_core.physics = {
     strength = 0,
     mass = 1,
-    air_resistance = -1.5,
-    gravity = -12,
-    friction = 0.2,
+    air_resistance = -1.35,
+    gravity = -9,
+    friction = 0.15,
 }
 
 ax_core.agent_properties = {
@@ -91,7 +91,7 @@ ax_core.agent_properties = {
         local on_ground = false
         if moveresult.collides then
             for _, col in ipairs(moveresult.collisions) do
-                if col.type == "node" and core.get_node(col.node_pos).name == "ax_core:field" then
+                if col.type == "node" and string.find(core.get_node(col.node_pos).name, "field") then
                     core.sound_play("lava",{gain=ax_core.volume.effects/100}, true)
                     ax_core.lava_particles(current_pos)
                     if self.replay then
@@ -104,6 +104,7 @@ ax_core.agent_properties = {
                         player:set_look_vertical(player_data.enabled_look_vertical)
                         player:set_look_horizontal(player_data.enabled_look_horizontal)
                         self.object:set_velocity(vector.zero())
+                        player_data.target = nil
                         return
                     end
                 end
@@ -193,6 +194,7 @@ ax_core.disable = function(name)
 end
 
 -- on_use and on_place
+ax_core.default_max_target_distance = 25
 function ax_core.click(itemstack, user, pointed_thing)
     if user then
         local player_name = user:get_player_name()
@@ -202,7 +204,8 @@ function ax_core.click(itemstack, user, pointed_thing)
                 local target_start_string = "ax_core:target_"
                 local node_name = core.get_node(target_position).name
                 local is_target = node_name:sub(1, #target_start_string) == target_start_string
-                if is_target then
+                if is_target and vector.distance(target_position, user:get_pos()) <= ax_core.players[player_name].max_target_distance then
+                    core.chat_send_all(vector.distance(target_position, user:get_pos()))
                     ax_core.set_target(player_name, target_position, node_name:sub(#target_start_string + 1))
                     return nil
                 end
@@ -215,9 +218,9 @@ end
 
 ax_core.set_target = function(name, pos, target_name)
     local strength_values = {
-        attractor = 40,
-        weak_attractor = 20,
-        repulsor = -20,
+        attractor = 30,
+        weak_attractor = 15,
+        repulsor = -15,
     }
     local strength = strength_values[target_name]
 

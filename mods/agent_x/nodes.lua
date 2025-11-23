@@ -71,7 +71,7 @@ reg_node("field", {
     use_texture_alpha = "blend",
     drawtype = "liquid",
     post_effect_color = "#F006",
-    {pointable = true},
+    pointable = true,
 }, true)
 ax_core.lights = {}
 local function makeAirLightNode(name, brightness)
