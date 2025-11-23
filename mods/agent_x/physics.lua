@@ -185,6 +185,7 @@ ax_core.disable = function(name)
                 crosshair = true
         })
         ax_core.players[name].enabled = false
+        ax_core.players[name].target = nil
         local entity = player:get_attach()
         player:set_detach()
         if entity then
