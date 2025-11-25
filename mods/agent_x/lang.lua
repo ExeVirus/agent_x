@@ -35,6 +35,7 @@
 -- {objective,time,x1,y1,z1,x2,y2,z2}
 -- {chat,time,text}
 -- {formspec,time,name}
+-- {timer,time,timer_time}
 
 -- Example Script:
 -- /script {sound,0,"welcome",,1.0,0,5} {text,0,"Welcome, Agent X, to your first mission",0.25,1.0} {pos,0,-33,7.6,13.9} {circle_look,2.75,-18.5,4.3,-10,-0.4,-18.4,4.3,13.9}
@@ -79,6 +80,7 @@ ax_core.lang.command_num_args = {
     objective = 7,
     chat = 2,
     formspec = 2,
+    timer = 2,
 }
 
 ax_core.lang.commands = {
@@ -289,6 +291,29 @@ ax_core.lang.commands = {
             core.close_formspec(player:get_player_name(),"")
         end
     end,
+    timer = function(player,orig_pos,dtime,time)
+        local player_name = player:get_player_name()
+        if ax_core.lang.players[player_name].timer then
+            ax_core.lang.players[player_name].timer.time = time
+        else
+            ax_core.lang.players[player_name].timer = {
+                orig_time = time,
+                time = time,
+                hud = player:hud_add({
+                    position = {x=0.5,y=1},
+                    offset = {x=0,y=-50},
+                    name = "timer",
+                    direction = 0,
+                    alignment = 0,
+                    type = "text",
+                    scale = {x=100,y=100},
+                    number = 0x00FF00,
+                    size = {x=5,y=5},
+                    text = string.format("%d:%02d", math.floor(time/60), time%60)
+                }),
+            }
+        end
+    end,
 }
 ax_core.lang.players = {}
 
@@ -429,10 +454,10 @@ ax_core.make_text_formspec = function(text)
 end
 core.register_globalstep(function(dtime)
     for player_name, player_data in pairs(ax_core.lang.players) do
+        local player = core.get_player_by_name(player_name)
         if player_data.script ~= nil and player_data.script.commands ~= nil then
             local script = player_data.script
             local remaining_dtime = dtime
-            local player = core.get_player_by_name(player_name)
             -- handle detect first
             if player_data.detect then
                 if vector.in_area(player:get_pos(), player_data.detect.min, player_data.detect.max) then
@@ -533,6 +558,20 @@ core.register_globalstep(function(dtime)
                     core.sound_stop(player_data.playing_voice.handle)
                     player_data.playing_voice = nil
                 end
+            end
+        end
+        if player_data.timer then
+            player_data.timer.time = player_data.timer.time - dtime
+            if player_data.timer.time < 0 then
+                if ax_core.players[player_name].enabled then
+                    ax_core.dieplayer(player_name)
+                    goto continue_loop
+                else
+                    player:hud_remove(player_data.timer.hud)
+                end
+            else
+                local tsec = player_data.timer.time
+                player:hud_change(player_data.timer.hud, "text", string.format("%d:%02d", math.floor(tsec/60), tsec%60))
             end
         end
         ::continue_loop::

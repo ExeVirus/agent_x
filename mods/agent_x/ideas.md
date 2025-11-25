@@ -25,7 +25,7 @@ Click or tap the attractor above that platform to grav there.
 [objective]
 Now that you are here, click again anywhere there isn't an attractor to stop attracting.
 [Pause]
-Notice the new objective on that platform far in the corner, and the blue attractor on the ceiling
+Notice the new objective on that platform far in the corner, and the blue attractor on the ceiling.
 [Look]
 You will need to first grav to the attractor and time your release to land on the objective platform.
 If you miss, use the floor attractors to start at the beginning.

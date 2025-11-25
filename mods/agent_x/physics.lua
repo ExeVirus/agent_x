@@ -98,13 +98,7 @@ ax_core.agent_properties = {
                         self.object:remove()
                         return
                     elseif self.player_name then
-                        -- revert to last enabled position
-                        self.object:set_pos(player_data.enabled_pos)
-                        local player = core.get_player_by_name(self.player_name)
-                        player:set_look_vertical(player_data.enabled_look_vertical)
-                        player:set_look_horizontal(player_data.enabled_look_horizontal)
-                        self.object:set_velocity(vector.zero())
-                        player_data.target = nil
+                        ax_core.dieplayer(self.player_name)
                         return
                     end
                 end
@@ -133,6 +127,25 @@ ax_core.agent_properties = {
     end,
 }
 
+ax_core.dieplayer = function(player_name)
+    -- revert to last enabled position
+    local player = core.get_player_by_name(player_name)
+    local entity = player:get_attach()
+    player_data = ax_core.players[player_name]
+    entity:set_pos(player_data.enabled_pos)
+    player:set_look_vertical(player_data.enabled_look_vertical)
+    player:set_look_horizontal(player_data.enabled_look_horizontal)
+    entity:set_velocity(vector.zero())
+    player_data.target = nil
+    player_data.start_time = core.get_gametime()
+    local lang_data = ax_core.lang.players[player_name]
+    if lang_data.timer then
+        lang_data.timer.time = lang_data.timer.orig_time
+        local tsec = lang_data.timer.time
+        player:hud_change(lang_data.timer.hud, "text", string.format("%d:%02d", math.floor(tsec/60), tsec%60))
+    end
+end
+
 core.register_entity("ax_core:agent", ax_core.agent_properties)
 
 ax_core.enable = function(name)
@@ -159,6 +172,7 @@ ax_core.enable = function(name)
         ax_core.players[name].enabled_pos = player:get_pos()
         ax_core.players[name].enabled_look_vertical = player:get_look_vertical()
         ax_core.players[name].enabled_look_horizontal = player:get_look_horizontal()
+        ax_core.players[name].start_time = core.get_gametime()
         local entity = core.add_entity(vector.add(player:get_pos(), vector.new(0,0.1,0)), "ax_core:agent")
         if entity then
             entity:get_luaentity().player_name = name
@@ -188,8 +202,12 @@ ax_core.disable = function(name)
         ax_core.players[name].target = nil
         local entity = player:get_attach()
         player:set_detach()
+        ax_core.players[name].end_time = core.get_gametime()
         if entity then
             entity:remove()
+        end
+        if ax_core.lang.players[player_name].timer then
+            player:hud_remove(ax_core.lang.players[player_name].timer.hud)
         end
     end
 end
@@ -220,10 +238,19 @@ end
 ax_core.set_target = function(name, pos, target_name)
     local strength_values = {
         attractor = 30,
-        weak_attractor = 15,
+        weak = 15,
         repulsor = -15,
     }
-    local strength = strength_values[target_name]
+    local strength = 0
+    if type(target_name) == "string" then
+        for key,val in pairs(strength_values) do
+            core.chat_send_all(target_name)
+            if string.find(target_name, key) ~= nil then
+                strength = val
+                break
+            end
+        end
+    end
 
     if ax_core.players[name].replay then
         local replay = ax_core.players[name].replay

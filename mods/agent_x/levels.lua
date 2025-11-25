@@ -217,13 +217,27 @@ table.insert(ax_core.levels, function(player)
     ax_core.players[player_name].max_target_distance = 18
     ax_core.play_music(player_name,"mainmenu", true)
     local script = {
-        {"pos" ,0,5,-8,86},
-        {"look",0,4,-8,85},
-        {"objective",0,-4,-3,86.5,-2,0,87.5},
-        {"detect",   0,-4,-3,86.5,-2,0,87.5,28},
+        {"pos" ,0,-2,32,94},
+        {"look",0,-8,30,95},
+        {"objective",0,-8,21.5,96.5,-10.5,24.5,93.5},
+        {"detect",   0,-8,21.5,96.5,-10.5,23.0,93.5,11},
         {"formspec",0,"fadein"},
         {"wait",1.25},
         {"formspec",0,""},
+        {"timer",0,45},
+        {"text",0,"Our line of work has one reliable source of income: regulation.",0.25,1.0},
+        {"text",0,"A customer will build a new facility and require our expertise in qualifying exacly how secure it is.",0.25,1.0},
+        {"text",0,"This is a C tier company installation, with no laser fields whatsoever. Instead they have opted for slowing operatives down.",0.25,1.0},
+        {"text",0,"You see, our industry an operative into a facility only for a short window before detection, and therefor delaying an operative can be a valid strategy.",0.25,1.0},
+        {"text",0,"Our company is capable of very long windows, but in this case, we are qualifying this customer for a 1 minute window.",0.25,1.0},
+        {"text",0,"Seeing as you are new operative, but also state of the art, we figure your skill will mirror a run-of-the-mill operative.",0.25,1.0},
+        {"text",0,"As you are new operative, but also state of the art, we figure your skill will mirror a run-of-the-mill operative.",0.25,1.0},
+        {"text",0,"We will give you a total of 2 minutes, after which you must try again - we need you to improve rapidly.",0.25,1.0},
+        {"text",0,"Good Luck, Agent X",0.25,1.0},
+        {"pos",0,-18,22,85},
+        {"attach",0},
+        {"wait",10000000},
+        {"detach",0}
     }
     ax_core.lang.script(player,"one_shot",script, function()
         -- ax_core.levels[4](player)
