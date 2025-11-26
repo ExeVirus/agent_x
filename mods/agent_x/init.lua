@@ -32,3 +32,5 @@ dofile(ax_core.mod_path .. "/nodes.lua")
 dofile(ax_core.mod_path .. "/physics.lua")
 dofile(ax_core.mod_path .. "/replay.lua")
 dofile(ax_core.mod_path .. "/startup.lua")
+
+-- //mix ax_core:floor_1 2 ax_core:floor_2 2 ax_core:floor_3 1

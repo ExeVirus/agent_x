@@ -160,14 +160,16 @@ ax_core.enable = function(name)
         local stack = ItemStack("ax_core:gun")
         player:get_inventory():set_list("main", {stack})
         player:set_wielded_item(stack)
-        player:hud_set_flags({
-            hotbar = false,
-            healthbar = false,
-            breathbar = false,
-            wielditem = false,
-            minimap = false,
-            crosshair = true
-        })
+        if ax_core.buildMode then
+            player:hud_set_flags({
+                hotbar = false,
+                healthbar = false,
+                breathbar = false,
+                wielditem = false,
+                minimap = false,
+                crosshair = true
+            })
+        end
         ax_core.players[name].enabled = true
         ax_core.players[name].enabled_pos = player:get_pos()
         ax_core.players[name].enabled_look_vertical = player:get_look_vertical()
@@ -190,14 +192,16 @@ ax_core.disable = function(name)
         }
     end
     if ax_core.players[name].enabled then
-        player:hud_set_flags({
-                hotbar = true,
-                healthbar = true,
-                breathbar = false,
-                wielditem = false,
-                minimap = false,
-                crosshair = true
-        })
+        if ax_core.buildMode then
+            player:hud_set_flags({
+                    hotbar = true,
+                    healthbar = true,
+                    breathbar = false,
+                    wielditem = false,
+                    minimap = false,
+                    crosshair = true
+            })
+        end
         ax_core.players[name].enabled = false
         ax_core.players[name].target = nil
         local entity = player:get_attach()
@@ -206,14 +210,15 @@ ax_core.disable = function(name)
         if entity then
             entity:remove()
         end
-        if ax_core.lang.players[player_name].timer then
-            player:hud_remove(ax_core.lang.players[player_name].timer.hud)
+        if ax_core.lang.players[name].timer then
+            player:hud_remove(ax_core.lang.players[name].timer.hud)
         end
     end
 end
 
--- on_use and on_place
 ax_core.default_max_target_distance = 25
+
+-- on_use and on_place both redirect here
 function ax_core.click(itemstack, user, pointed_thing)
     if user then
         local player_name = user:get_player_name()
@@ -224,7 +229,6 @@ function ax_core.click(itemstack, user, pointed_thing)
                 local node_name = core.get_node(target_position).name
                 local target_node = node_name:match(target_pattern)
                 if target_node and vector.distance(target_position, user:get_pos()) <= ax_core.players[player_name].max_target_distance then
-                    core.chat_send_all(vector.distance(target_position, user:get_pos()))
                     ax_core.set_target(player_name, target_position, target_node)
                     return nil
                 end
@@ -244,7 +248,6 @@ ax_core.set_target = function(name, pos, target_name)
     local strength = 0
     if type(target_name) == "string" then
         for key,val in pairs(strength_values) do
-            core.chat_send_all(target_name)
             if string.find(target_name, key) ~= nil then
                 strength = val
                 break

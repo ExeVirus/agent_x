@@ -11,9 +11,7 @@ function ax_core.beam(player_pos, target_pos)
         local direction = vector.direction(player_pos, target_pos)
         for i=1,5 do
             core.add_particle({
-                -- pos=vector.add(player_pos,vector.multiply(direction, 1-(20/i)),
                 pos=vector.add(player_pos,vector.multiply(direction, distance/rand:next(10, 100)*10)),
-                -- pos=player_pos,
                 velocity=direction,
                 expirationtime=0.1,
                 size=0.5,

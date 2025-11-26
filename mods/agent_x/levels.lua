@@ -117,10 +117,10 @@ table.insert(ax_core.levels, function(player)
         {"wait",3.5},
         {"wait",900000000},
         {"detach",0},
-        {"wait",1.0},
+        {"wait",0.5},
         {"voice",0,"1_10_Alright_I_think_you_have",0,8.0},
         {"text",0,"Alright, I think you have mastered the basics, let's move on to Laser Fields...",0.25,0.25},
-        {"wait",8.0}
+        {"wait",7.25}
     }
     core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
     core.after(1.275, function()
