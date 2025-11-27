@@ -119,8 +119,8 @@ table.insert(ax_core.levels, function(player)
         {"detach",0},
         {"wait",0.5},
         {"voice",0,"1_10_Alright_I_think_you_have",0,8.0},
-        {"text",0,"Alright, I think you have mastered the basics, let's move on to Laser Fields...",0.25,0.25},
-        {"wait",7.25}
+        {"text",0,"Alright, I think you have mastered the basics, let's move on to Laser Fields...",0.25,0.75},
+        {"wait",4.25}
     }
     core.show_formspec(player:get_player_name(), "fadein", ax_core.fadein)
     core.after(1.275, function()
@@ -203,7 +203,10 @@ table.insert(ax_core.levels, function(player)
         {"attach",0},
         {"wait",100000000},
         {"detach",0},
-        {"formspec",0,"fadein"},
+        {"voice",0,"2_12_Congratulations_we_find_your_control",0,7.3},
+        {"text",0,"Congratulations, we find your control and reaction functionality to be sufficiently calibrated for your first company mission.",0.33,1.3},
+        {"wait",7.3},
+        {"formspec",0,"fadeout"},
         {"wait",0.9},
     }
     ax_core.lang.script(player,"one_shot",script, function()
@@ -218,28 +221,50 @@ table.insert(ax_core.levels, function(player)
     ax_core.play_music(player_name,"mainmenu", true)
     local script = {
         {"pos" ,0,-2,32,94},
-        {"look",0,-8,30,95},
+        {"look",0,-8.5,28.5,95},
         {"objective",0,-8,21.5,96.5,-10.5,24.5,93.5},
-        {"detect",   0,-8,21.5,96.5,-10.5,23.0,93.5,11},
+        {"detect",   0,-8,21.5,96.5,-10.5,23.0,93.5,37},
         {"formspec",0,"fadein"},
         {"wait",1.25},
         {"formspec",0,""},
-        {"timer",0,45},
-        {"text",0,"Our line of work has one reliable source of income: regulation.",0.25,1.0},
-        {"text",0,"A customer will build a new facility and require our expertise in qualifying exacly how secure it is.",0.25,1.0},
-        {"text",0,"This is a C tier company installation, with no laser fields whatsoever. Instead they have opted for slowing operatives down.",0.25,1.0},
-        {"text",0,"You see, our industry an operative into a facility only for a short window before detection, and therefor delaying an operative can be a valid strategy.",0.25,1.0},
-        {"text",0,"Our company is capable of very long windows, but in this case, we are qualifying this customer for a 1 minute window.",0.25,1.0},
-        {"text",0,"Seeing as you are new operative, but also state of the art, we figure your skill will mirror a run-of-the-mill operative.",0.25,1.0},
-        {"text",0,"As you are new operative, but also state of the art, we figure your skill will mirror a run-of-the-mill operative.",0.25,1.0},
-        {"text",0,"We will give you a total of 2 minutes, after which you must try again - we need you to improve rapidly.",0.25,1.0},
-        {"text",0,"Good Luck, Agent X",0.25,1.0},
+        {"voice",0,"3_1_Our_line_of_work_has",0,4.5},
+        {"text",0,"Our line of work has one reliable source of income: Regulation.",0.28,1.1},
+        {"wait", 4.5},
+        {"voice",0,"3_2_A_customer_will_build_a",0,6.6},
+        {"text",0,"A customer will build a new facility and require our expertise in qualifying exacly how secure it is.",0.27,1.0},
+        {"wait", 6.6},
+        {"voice",0,"3_3_This_is_a_C_tier",0,7.6},
+        {"text",0,"This is a C tier company installation, with no laser fields whatsoever. Instead they have opted for slowing operatives down.",0.3,1.2},
+        {"circle_look",7.6,-8.5,95,1.2,0,-8.5,28.5,95},
+        {"voice",0,"3_4_You_see_our_industry_can",0,8.6},
+        {"text",0,"You see, our industry can send operatives into a facility for only short windows, and therefore delaying an operative is a valid strategy.",0.3,1.2},
+        {"circle_look",8.6,-8.5,95,1.2,0,-8.5,28.5,95},
+        {"voice",0,"3_5_Our_company_is_capable_of",0,7.6},
+        {"text",0,"Our company is capable of very long windows, but in this case, we are qualifying this customer for a 30 second window.",0.27,1.2},
+        {"circle_look",7.6,-8.5,95,1.2,0,-8.5,28.5,95},
+        {"voice",0,"3_6_As_you_are_a_new",0,6.2},
+        {"text",0,"As you are a new operative, but also state of the art, we figure your skill will mirror a run-of-the-mill operative.",0.25,1.0},
+        {"circle_look",6.2,-8.5,95,1.2,0,-8.5,28.5,95},
+        {"voice",0,"3_7_We_will_give_you_a",0,6.9},
+        {"text",0,"We will give you a total of 45 seconds, after which you must try again - we need you to improve rapidly.",0.25,1.2},
+        {"wait", 4.0},
+        {"line_look_line",2.9,-18,22,85,6,-16,22,83,6},
+        {"voice",0,"3_8_Good_Luck_Agent_X",0,1.5},
+        {"text",0,"Good Luck, Agent X",0.25,0.5},
+        {"line_look_line",1.5,-18,22,85,6,-16,22,83,3},
         {"pos",0,-18,22,85},
+        {"timer",0,45},
         {"attach",0},
         {"wait",10000000},
-        {"detach",0}
+        {"detach",0},
+        {"voice",0,"3_9_Woohoo_You_finished_this_Luanti",0,9.2},
+        {"text",0,"Woohoo! You finished this Luanti 2025 Game Jam version of Agent X - the rest of the story will be released later - stay tuned!",0.285,2.0},
+        {"wait",9.2},
+        {"formspec",0,"fadeout"},
+        {"wait",0.9},
+        {"formspec",0,""},
     }
     ax_core.lang.script(player,"one_shot",script, function()
-        -- ax_core.levels[4](player)
+        ax_core.startup(player)
     end)
 end)

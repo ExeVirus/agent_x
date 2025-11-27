@@ -68,15 +68,15 @@ ax_core.startup = function(player)
     local script = {
         {"pos" ,0,0.5,4,0},
         {"look",0.5,0.5,4,5},
-        {"line",2,0.5,4,50,5}, -- 10
+        {"line_look",2,0.5,4,50,5,0.5,4,60}, -- 10
         {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 20
+        {"line_look",2,0.5,4,50,5,0.5,4,60}, -- 20
         {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 30
+        {"line_look",2,0.5,4,50,5,0.5,4,60}, -- 30
         {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,50,5}, -- 40
+        {"line_look",2,0.5,4,50,5,0.5,4,60}, -- 40
         {"replay",0,"mainmenu",true},
-        {"line",2,0.5,4,48,5}, -- 48
+        {"line_look",2,0.5,4,48,5,0.5,4,60}, -- 48
         {"replay",0,"mainmenu",true},
     }
     if not ax_core.buildMode then
