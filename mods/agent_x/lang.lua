@@ -395,6 +395,27 @@ function ax_core.lang.chatscript(player, params, mode, callback)
     end
 end
 
+if not table.move then
+    function table.move(a1, f, e, t, a2)
+        a2 = a2 or a1
+        local offset = t - f
+        local n = e - f + 1
+        if n <= 0 then return a2 end
+
+        -- Handle overlap if copying within the same table to a higher index
+        if a1 == a2 and t > f then
+            for i = n - 1, 0, -1 do
+                a2[f + i + offset] = a1[f + i]
+            end
+        else
+            for i = 0, n - 1 do
+                a2[f + i + offset] = a1[f + i]
+            end
+        end
+        return a2
+    end
+end
+
 function ax_core.lang.script(player,mode,command_groups,callback)
     if player ~= nil and type(command_groups) == "table" then
         local parsed_commands = {}
@@ -523,13 +544,14 @@ core.register_globalstep(function(dtime)
             else
                 player_data.title = nil
                 core.close_formspec(player_name, "title")
-                goto continue_loop
             end
-            core.show_formspec(player_name, "title", ax_core.make_title_formspec(
-                title.text,
-                title.color,
-                alpha_percent
-            ))
+            if player_data.title then
+                core.show_formspec(player_name, "title", ax_core.make_title_formspec(
+                    title.text,
+                    title.color,
+                    alpha_percent
+                ))
+            end
         end
         if player_data.text then
             local text = player_data.text
@@ -537,11 +559,11 @@ core.register_globalstep(function(dtime)
             if text.current_time > text.total_time then
                 player_data.text = nil
                 core.close_formspec(player_name, "text")
-                goto continue_loop
+            else
+                core.show_formspec(player_name, "text", ax_core.make_text_formspec(
+                    table.concat(text.text_array," ", 1, math.min(#text.text_array,math.floor(text.current_time / text.word_time)))
+                ))
             end
-            core.show_formspec(player_name, "text", ax_core.make_text_formspec(
-                table.concat(text.text_array," ", 1, math.min(#text.text_array,math.floor(text.current_time / text.word_time)))
-            ))
         end
         for _, playing_sound in pairs(player_data.playing_sounds) do
             if playing_sound.play_time > 0 then
@@ -565,7 +587,6 @@ core.register_globalstep(function(dtime)
             if player_data.timer.time < 0 then
                 if ax_core.players[player_name].enabled then
                     ax_core.dieplayer(player_name)
-                    goto continue_loop
                 else
                     player:hud_remove(player_data.timer.hud)
                 end
@@ -574,6 +595,5 @@ core.register_globalstep(function(dtime)
                 player:hud_change(player_data.timer.hud, "text", string.format("%d:%02d", math.floor(tsec/60), tsec%60))
             end
         end
-        ::continue_loop::
     end
 end)

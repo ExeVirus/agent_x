@@ -9,6 +9,7 @@ table.insert(ax_core.levels, function(player)
         {"pos" ,0,19,-8.7,56},
         {"look",0,19,-9,55},
     }, nil)
+    ax_core.play_music(player_name,"0_0_music", false)
     ax_core.play_replay("intro")
     core.show_formspec(player_name, "fadein", ax_core.fadein)
     local script = {
@@ -66,7 +67,7 @@ end)
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
     ax_core.players[player_name].max_target_distance = ax_core.default_max_target_distance
-    ax_core.play_music(player_name,"mainmenu", true)
+    ax_core.play_music(player_name,"1_0_music", true)
     ax_core.lang.script(player,"one_shot",{
         {"pos" ,0.0,19,-9,82},
         {"look",0.0,19,-9,83},
@@ -138,7 +139,7 @@ end)
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
     ax_core.players[player_name].max_target_distance = 18
-    ax_core.play_music(player_name,"mainmenu", true)
+    ax_core.play_music(player_name,"2_0_music", true)
     local script = {
         {"pos" ,0,5,-8,86},
         {"look",0,4,-8,85},
@@ -218,7 +219,7 @@ end)
 table.insert(ax_core.levels, function(player)
     local player_name = player:get_player_name()
     ax_core.players[player_name].max_target_distance = 18
-    ax_core.play_music(player_name,"mainmenu", true)
+    ax_core.play_music(player_name,"3_0_music", true)
     local script = {
         {"pos" ,0,-2,32,94},
         {"look",0,-8.5,28.5,95},
