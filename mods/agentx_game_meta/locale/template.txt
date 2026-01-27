@@ -1,0 +1,2 @@
+# textdomain: agentx_game_meta
+An Agent Game=
